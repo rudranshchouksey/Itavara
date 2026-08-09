@@ -8,13 +8,17 @@
     "start": "next start"
   },
   "dependencies": {
+    "@itvara/ui": "workspace:*",
+    "lucide-react": "^0.290.0",
     "next": "^15.0.0",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "@itvara/ui": "workspace:*",
-    "lucide-react": "^0.290.0"
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
-    "@itvara/config": "workspace:*"
+    "@itvara/config": "workspace:*",
+    "@types/node": "^26.2.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^19.2.4",
+    "typescript": "^5.0.0"
   }
 }
