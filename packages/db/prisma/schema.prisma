@@ -28,6 +28,7 @@ model User {
   updatedAt    DateTime           @updatedAt
   verification VerificationBadge?
   listings     Listing[]
+  bookings     Booking[]
 }
 
 model VerificationBadge {
@@ -66,6 +67,7 @@ model Listing {
   updatedAt     DateTime           @updatedAt
   amenities     Amenity[]
   customOptions CustomTripOption?
+  bookings      Booking[]
 }
 
 model Amenity {
@@ -82,4 +84,43 @@ model CustomTripOption {
   hasCabRental    Boolean  @default(false)
   hasLocalAttire  Boolean  @default(false)
   hasFoodCuration Boolean  @default(false)
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model Booking {
+  id         String        @id @default(uuid())
+  userId     String
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId  String
+  listing    Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  checkIn    DateTime
+  checkOut   DateTime
+  totalPrice Decimal
+  status     BookingStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  addOns     AddOn[]
+  transaction Transaction?
+}
+
+model AddOn {
+  id        String   @id @default(uuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  type      String   // e.g., "CAB", "ATTIRE", "FOOD_CURATION", "GUIDE"
+  price     Decimal
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  bookingId String   @unique
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  provider  String   // e.g., "RAZORPAY", "PHONEPE", "STRIPE"
+  paymentId String?
+  status    String   // e.g., "SUCCESS", "FAILED", "PENDING"
 }
