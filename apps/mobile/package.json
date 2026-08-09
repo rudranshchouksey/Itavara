@@ -9,14 +9,15 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "@itvara/ui": "workspace:*",
     "expo": "~50.0.0",
     "expo-router": "~3.4.0",
     "react": "18.2.0",
     "react-native": "0.73.6",
-    "@itvara/ui": "workspace:*",
     "react-native-svg": "14.1.0"
   },
   "devDependencies": {
-    "@itvara/config": "workspace:*"
+    "@itvara/config": "workspace:*",
+    "@types/react": "^18.0.0"
   }
 }

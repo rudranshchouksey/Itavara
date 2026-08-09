@@ -8,11 +8,12 @@
     "./styles.css": "./styles.css"
   },
   "dependencies": {
-    "nativewind": "^4.1.23",
-    "tailwindcss": "^4.0.0",
+    "@itvara/utils": "workspace:*",
     "expo-haptics": "^14.0.0",
     "lucide-react-native": "^0.290.0",
-    "@itvara/utils": "workspace:*"
+    "nativewind": "^4.1.23",
+    "react-native-svg": "14.1.0",
+    "tailwindcss": "^4.0.0"
   },
   "peerDependencies": {
     "react": "*",
@@ -20,8 +21,8 @@
   },
   "devDependencies": {
     "@itvara/config": "workspace:*",
-    "typescript": "^5.0.0",
     "@types/react": "^18.0.0",
-    "@types/react-native": "^0.72.0"
+    "@types/react-native": "^0.72.0",
+    "typescript": "^5.0.0"
   }
 }
