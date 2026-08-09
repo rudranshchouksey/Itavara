@@ -1,0 +1,22 @@
+{
+  "name": "mobile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
+  },
+  "dependencies": {
+    "expo": "~50.0.0",
+    "expo-router": "~3.4.0",
+    "react": "18.2.0",
+    "react-native": "0.73.6",
+    "@itvara/ui": "workspace:*",
+    "react-native-svg": "14.1.0"
+  },
+  "devDependencies": {
+    "@itvara/config": "workspace:*"
+  }
+}
