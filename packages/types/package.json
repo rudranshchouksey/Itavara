@@ -1,0 +1,13 @@
+{
+  "name": "@itvara/types",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "dependencies": {
+    "@itvara/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@itvara/config": "workspace:*",
+    "typescript": "^5.0.0"
+  }
+}

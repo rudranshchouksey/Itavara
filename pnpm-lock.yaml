@@ -43,6 +43,28 @@ importers:
         specifier: ^5.10.0
         version: 5.22.0
 
+  packages/types:
+    dependencies:
+      '@itvara/db':
+        specifier: workspace:*
+        version: link:../db
+    devDependencies:
+      '@itvara/config':
+        specifier: workspace:*
+        version: link:../config
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/utils:
+    devDependencies:
+      '@itvara/config':
+        specifier: workspace:*
+        version: link:../config
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
 packages:
 
   '@eslint-community/eslint-utils@4.10.1':

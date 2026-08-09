@@ -1,0 +1,10 @@
+{
+  "name": "@itvara/utils",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "devDependencies": {
+    "@itvara/config": "workspace:*",
+    "typescript": "^5.0.0"
+  }
+}
