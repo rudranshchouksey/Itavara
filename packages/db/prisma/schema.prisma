@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  GUEST
+  HOST
+  SUPERHOST
+  TRAVEL_ADMIN
+}
+
+model User {
+  id           String             @id @default(uuid())
+  email        String             @unique
+  phoneNumber  String?
+  passwordHash String
+  name         String
+  profilePhoto String?
+  bio          String?
+  hometown     String?
+  role         Role               @default(GUEST)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  verification VerificationBadge?
+}
+
+model VerificationBadge {
+  id               String  @id @default(uuid())
+  userId           String  @unique
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isGovtIdVerified Boolean @default(false)
+  isEmailVerified  Boolean @default(false)
+  isPhoneVerified  Boolean @default(false)
+  badgeType        String? // e.g. "VERIFIED_TRAVELER", "SUPERHOST"
+}
