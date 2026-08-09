@@ -27,6 +27,7 @@ model User {
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   verification VerificationBadge?
+  listings     Listing[]
 }
 
 model VerificationBadge {
@@ -37,4 +38,48 @@ model VerificationBadge {
   isEmailVerified  Boolean @default(false)
   isPhoneVerified  Boolean @default(false)
   badgeType        String? // e.g. "VERIFIED_TRAVELER", "SUPERHOST"
+}
+
+enum ListingType {
+  MONASTERY
+  ASHRAM
+  HOSTEL
+  WORK_STUDIO
+  TENT
+  MANSION
+  LOCAL_ROOM
+}
+
+model Listing {
+  id            String             @id @default(uuid())
+  hostId        String
+  host          User               @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  title         String
+  description   String
+  type          ListingType
+  pricePerNight Decimal
+  address       String
+  latitude      Float
+  longitude     Float
+  maxGuests     Int
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  amenities     Amenity[]
+  customOptions CustomTripOption?
+}
+
+model Amenity {
+  id       String    @id @default(uuid())
+  name     String
+  iconKey  String?
+  listings Listing[]
+}
+
+model CustomTripOption {
+  id              String   @id @default(uuid())
+  listingId       String   @unique
+  listing         Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  hasCabRental    Boolean  @default(false)
+  hasLocalAttire  Boolean  @default(false)
+  hasFoodCuration Boolean  @default(false)
 }
