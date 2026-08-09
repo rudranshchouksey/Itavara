@@ -10,7 +10,9 @@
   "dependencies": {
     "nativewind": "^4.1.23",
     "tailwindcss": "^4.0.0",
-    "expo-haptics": "^14.0.0"
+    "expo-haptics": "^14.0.0",
+    "lucide-react-native": "^0.290.0",
+    "@itvara/utils": "workspace:*"
   },
   "peerDependencies": {
     "react": "*",
