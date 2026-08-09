@@ -29,6 +29,10 @@ model User {
   verification VerificationBadge?
   listings     Listing[]
   bookings     Booking[]
+  posts        Post[]
+  tags         Tag[]
+  comments     Comment[]
+  likes        Like[]
 }
 
 model VerificationBadge {
@@ -68,6 +72,7 @@ model Listing {
   amenities     Amenity[]
   customOptions CustomTripOption?
   bookings      Booking[]
+  tags          Tag[]
 }
 
 model Amenity {
@@ -123,4 +128,56 @@ model Transaction {
   provider  String   // e.g., "RAZORPAY", "PHONEPE", "STRIPE"
   paymentId String?
   status    String   // e.g., "SUCCESS", "FAILED", "PENDING"
+}
+
+enum PostType {
+  PHOTO
+  REEL
+  MINI_BLOG
+}
+
+model Post {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      PostType
+  title     String?
+  content   String?   @db.Text
+  mediaUrls String[]
+  createdAt DateTime  @default(now())
+  tags      Tag[]
+  comments  Comment[]
+  likes     Like[]
+}
+
+model Tag {
+  id              String   @id @default(uuid())
+  postId          String
+  post            Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  taggedListingId String?
+  taggedListing   Listing? @relation(fields: [taggedListingId], references: [id], onDelete: SetNull)
+  taggedGuideId   String?  // No Guide model defined yet
+  taggedUserId    String?
+  taggedUser      User?    @relation(fields: [taggedUserId], references: [id], onDelete: SetNull)
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  text      String
+  createdAt DateTime @default(now())
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
 }
