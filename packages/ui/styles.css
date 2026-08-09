@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #FF385C;
+  --color-brandDark: #E00B41;
+  --color-neutralDark: #222222;
+  --color-neutralLight: #F7F7F7;
+  --color-glass: rgba(255, 255, 255, 0.8);
+
+  --radius-card: 16px;
+  --radius-pill: 9999px;
+
+  --shadow-stay-card: 0 6px 16px rgba(0, 0, 0, 0.05);
+  --shadow-search-bar: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
