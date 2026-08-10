@@ -140,3 +140,42 @@ export const searchListings = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to search listings' });
   }
 };
+
+export const getFlexibleListings = async (req: Request, res: Response) => {
+  try {
+    const { budget, vibe } = req.query;
+    
+    // Convert budget to number if provided
+    const maxPrice = budget ? parseInt(budget as string) : undefined;
+    
+    // Map vibe to ListingTypes
+    let allowedTypes: string[] = ['MONASTERY', 'ASHRAM', 'TENT', 'WORK_STUDIO', 'MANSION', 'HOSTEL'];
+    if (vibe === 'spiritual') {
+      allowedTypes = ['MONASTERY', 'ASHRAM'];
+    } else if (vibe === 'nature') {
+      allowedTypes = ['TENT'];
+    } else if (vibe === 'luxury') {
+      allowedTypes = ['MANSION'];
+    }
+
+    // Query Prisma
+    const listings = await prisma.listing.findMany({
+      where: {
+        type: { in: allowedTypes as any },
+        ...(maxPrice ? { pricePerNight: { lte: maxPrice } } : {})
+      },
+      take: 10, // Recommend top 10 unique stays
+      orderBy: {
+        createdAt: 'desc' // Or randomly, but we stick to latest for simplicity
+      },
+      include: {
+        customOptions: true,
+      }
+    });
+
+    res.status(200).json({ listings, message: "Curiosity Recommendation Engine Results" });
+  } catch (error) {
+    console.error('Error fetching flexible listings:', error);
+    res.status(500).json({ error: 'Failed to fetch flexible listings' });
+  }
+};
