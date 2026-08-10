@@ -78,3 +78,65 @@ export const createListing = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to create listing' });
   }
 };
+
+export const searchListings = async (req: Request, res: Response) => {
+  try {
+    const {
+      latitude,
+      longitude,
+      radiusInKm = 50,
+      sortBy = 'distance', // 'distance', 'price_asc', 'price_desc'
+    } = req.body;
+
+    if (latitude === undefined || longitude === undefined) {
+      return res.status(400).json({ error: 'Latitude and longitude are required' });
+    }
+
+    const radiusInMeters = radiusInKm * 1000;
+
+    // We must use raw query because Prisma does not natively support PostGIS operations well yet
+    let rawQuery = `
+      SELECT 
+        l.*, 
+        ST_DistanceSphere(l.location, ST_SetSRID(ST_MakePoint($1, $2), 4326)) AS distance_meters
+      FROM "Listing" l
+      WHERE ST_DWithin(
+        l.location::geography, 
+        ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, 
+        $3
+      )
+    `;
+
+    // Note: Parameterized ORDER BY is not allowed in PostgreSQL, so we append the string directly. 
+    // We strictly check the sortBy parameter to prevent SQL injection.
+    if (sortBy === 'price_asc') {
+      rawQuery += ` ORDER BY l."pricePerNight" ASC`;
+    } else if (sortBy === 'price_desc') {
+      rawQuery += ` ORDER BY l."pricePerNight" DESC`;
+    } else {
+      // Default to distance
+      rawQuery += ` ORDER BY distance_meters ASC`;
+    }
+
+    const listings: any[] = await prisma.$queryRawUnsafe(
+      rawQuery,
+      longitude, // PostGIS uses Longitude (X), Latitude (Y) order for ST_MakePoint
+      latitude,
+      radiusInMeters
+    );
+
+    // Format the results to add the "X km away" string
+    const formattedListings = listings.map((listing) => {
+      const distanceKm = (listing.distance_meters / 1000).toFixed(1);
+      return {
+        ...listing,
+        distanceString: `${distanceKm} km away`
+      };
+    });
+
+    res.status(200).json({ listings: formattedListings });
+  } catch (error) {
+    console.error('Error searching listings:', error);
+    res.status(500).json({ error: 'Failed to search listings' });
+  }
+};
