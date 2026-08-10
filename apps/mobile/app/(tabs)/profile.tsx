@@ -25,7 +25,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-[#F7F7F7]">
+    <ScrollView style={{ flex: 1, backgroundColor: '#F7F7F7' }}>
       <View className="p-4">
         {/* Header Section */}
         <View className="bg-white p-5 rounded-2xl shadow-sm mb-4">

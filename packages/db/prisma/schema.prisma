@@ -66,7 +66,9 @@ model Listing {
   address       String
   latitude      Float
   longitude     Float
+  location      Unsupported("geometry(Point, 4326)")?
   maxGuests     Int
+  bedCount      Int                @default(1)
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
   amenities     Amenity[]
@@ -89,6 +91,7 @@ model CustomTripOption {
   hasCabRental    Boolean  @default(false)
   hasLocalAttire  Boolean  @default(false)
   hasFoodCuration Boolean  @default(false)
+  hasLocalGuide   Boolean  @default(false)
 }
 
 enum BookingStatus {
