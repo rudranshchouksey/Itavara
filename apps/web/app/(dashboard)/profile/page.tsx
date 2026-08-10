@@ -112,31 +112,25 @@ export default function ProfilePage() {
             />
           </div>
           
-          <div>
-            <Typography variant="body" className="mb-1 font-semibold text-sm">Name</Typography>
-            <TextInput 
-              value={profileData.name} 
-              onChangeText={(text) => setProfileData({...profileData, name: text})} 
-            />
-          </div>
+          <TextInput 
+            label="Name"
+            value={profileData.name} 
+            onChangeText={(text) => setProfileData({...profileData, name: text})} 
+          />
           
-          <div>
-            <Typography variant="body" className="mb-1 font-semibold text-sm">Hometown</Typography>
-            <TextInput 
-              value={profileData.hometown} 
-              onChangeText={(text) => setProfileData({...profileData, hometown: text})} 
-            />
-          </div>
+          <TextInput 
+            label="Hometown"
+            value={profileData.hometown} 
+            onChangeText={(text) => setProfileData({...profileData, hometown: text})} 
+          />
           
-          <div>
-            <Typography variant="body" className="mb-1 font-semibold text-sm">Bio</Typography>
-            <TextInput 
-              value={profileData.bio} 
-              onChangeText={(text) => setProfileData({...profileData, bio: text})} 
-              multiline
-              numberOfLines={4}
-            />
-          </div>
+          <TextInput 
+            label="Bio"
+            value={profileData.bio} 
+            onChangeText={(text) => setProfileData({...profileData, bio: text})} 
+            multiline
+            numberOfLines={4}
+          />
           
           <Button 
             title="Save Changes" 
