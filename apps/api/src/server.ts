@@ -7,6 +7,7 @@ import userRoutes from './routes/user.routes';
 import uploadRoutes from './routes/upload.routes';
 import listingsRoutes from './routes/listings.routes';
 import bookingsRoutes from './routes/bookings.routes';
+import paymentsRoutes from './routes/payments.routes';
 import { authGuard } from './middleware/authGuard';
 
 const app = express();
@@ -17,7 +18,13 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use(express.json());
+app.use(express.json({
+  verify: (req: any, res, buf) => {
+    if (req.originalUrl === '/api/payments/verify') {
+      req.rawBody = buf.toString();
+    }
+  }
+}));
 app.use(cookieParser());
 
 // Health check
@@ -32,6 +39,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/listings', listingsRoutes);
 app.use('/api/bookings', bookingsRoutes);
+app.use('/api/payments', paymentsRoutes);
 
 // Example of a protected route using the authGuard
 app.get('/api/me', authGuard, (req, res) => {
