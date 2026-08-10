@@ -107,7 +107,7 @@ export default function ProfilePage() {
             <Button 
               title="Change Photo" 
               onPress={handleAvatarUpload} 
-              variant="text" 
+              variant="ghost" 
               className="ml-4"
             />
           </div>
