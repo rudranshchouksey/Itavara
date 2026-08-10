@@ -1,4 +1,5 @@
 export * from '@itvara/db';
+export * from './auth';
 
 export interface SearchListingsDTO {
   latitude?: number;
