@@ -1,15 +1,29 @@
-import React, { useState } from 'react';
-import { View, ScrollView, Image, Dimensions, SafeAreaView } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { View, ScrollView, Image, Dimensions, SafeAreaView, Switch } from 'react-native';
 import { Typography, Avatar, Button } from '@itvara/ui';
 import { useLocalSearchParams } from 'expo-router';
-// Note: We use lucide-react-native for mobile icons
 import { MapPin, Wifi, Car, Coffee, Shield, Star, Heart, Share } from 'lucide-react-native';
+import { calculateTripQuote } from '@itvara/utils';
 
 const { width } = Dimensions.get('window');
 
 export default function StayDetailScreen() {
   const { id } = useLocalSearchParams();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const [nights, setNights] = useState(5);
+  const [addons, setAddons] = useState({
+    cabRental: false,
+    culturalAttire: false,
+    foodCuration: false,
+    localGuide: false,
+  });
+
+  const quote = useMemo(() => calculateTripQuote({
+    basePricePerNight: 2500, // listing.price
+    nights,
+    addons
+  }), [nights, addons]);
 
   // Mocked data for layout
   const listing = {
@@ -181,17 +195,60 @@ export default function StayDetailScreen() {
           </View>
           
         </View>
+
+        {/* Custom Trip Options (Addons) */}
+        <View className="px-5 py-6 mb-24 border-t border-gray-200">
+          <Typography variant="h2" className="text-xl font-bold mb-4 text-[#222222]">
+            Custom Trip Add-ons
+          </Typography>
+          
+          <View className="flex-row items-center justify-between mb-4">
+            <Typography variant="body" className="text-base text-gray-700">Cab / Car Rental</Typography>
+            <Switch 
+              value={addons.cabRental} 
+              onValueChange={(val) => setAddons({...addons, cabRental: val})} 
+              trackColor={{ true: '#FF385C' }}
+            />
+          </View>
+
+          <View className="flex-row items-center justify-between mb-4">
+            <Typography variant="body" className="text-base text-gray-700">Local Guide</Typography>
+            <Switch 
+              value={addons.localGuide} 
+              onValueChange={(val) => setAddons({...addons, localGuide: val})} 
+              trackColor={{ true: '#FF385C' }}
+            />
+          </View>
+
+          <View className="flex-row items-center justify-between mb-4">
+            <Typography variant="body" className="text-base text-gray-700">Cultural Attire</Typography>
+            <Switch 
+              value={addons.culturalAttire} 
+              onValueChange={(val) => setAddons({...addons, culturalAttire: val})} 
+              trackColor={{ true: '#FF385C' }}
+            />
+          </View>
+
+          <View className="flex-row items-center justify-between mb-4">
+            <Typography variant="body" className="text-base text-gray-700">Food Curation</Typography>
+            <Switch 
+              value={addons.foodCuration} 
+              onValueChange={(val) => setAddons({...addons, foodCuration: val})} 
+              trackColor={{ true: '#FF385C' }}
+            />
+          </View>
+        </View>
       </ScrollView>
 
       {/* Sticky Bottom Booking Footer */}
       <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-5 py-3 flex-row justify-between items-center pb-8">
         <View>
           <View className="flex-row items-baseline gap-1">
-            <Typography variant="h2" className="text-lg font-bold text-[#222222]">₹{listing.price}</Typography>
-            <Typography variant="body" className="text-gray-500 text-sm">night</Typography>
+            <Typography variant="h2" className="text-lg font-bold text-[#222222]">₹{quote.grandTotal}</Typography>
+            <Typography variant="body" className="text-gray-500 text-sm">total</Typography>
           </View>
           <Typography variant="caption" className="text-gray-500 underline text-xs">
-            Oct 12 - 17
+            Show price breakdown
           </Typography>
         </View>
         <Button variant="primary" title="Reserve" onPress={() => {}} />

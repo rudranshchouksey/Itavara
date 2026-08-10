@@ -1,14 +1,29 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Typography, Avatar, Button } from '@itvara/ui';
-// Using standard lucide-react icons for the web version
 import { MapPin, Wifi, Car, Coffee, Shield, Heart, Share, Star } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { calculateTripQuote } from '@itvara/utils';
 
 export default function PropertyDetailPage() {
   const params = useParams();
   const id = params?.id || 'demo-id';
+
+  // Booking Widget State
+  const [nights, setNights] = useState(5);
+  const [addons, setAddons] = useState({
+    cabRental: false,
+    culturalAttire: false,
+    foodCuration: false,
+    localGuide: false,
+  });
+
+  const quote = useMemo(() => calculateTripQuote({
+    basePricePerNight: 2500, // listing.price
+    nights,
+    addons
+  }), [nights, addons]);
 
   // Mocked data for layout
   const listing = {
@@ -155,9 +170,65 @@ export default function PropertyDetailPage() {
               <span className="text-2xl font-bold text-[#222222]">₹{listing.price}</span>
               <span className="text-gray-500">night</span>
             </div>
+            
+            {/* Custom Addons Toggles */}
+            <div className="mb-6 border-b border-gray-200 pb-4">
+              <Typography variant="h2" className="text-lg font-bold mb-3">Custom Add-ons</Typography>
+              
+              <label className="flex items-center justify-between mb-3 cursor-pointer">
+                <span className="text-gray-700">Cab / Car Rental</span>
+                <input type="checkbox" className="w-5 h-5 accent-[#FF385C]" checked={addons.cabRental} onChange={(e) => setAddons({...addons, cabRental: e.target.checked})} />
+              </label>
+              
+              <label className="flex items-center justify-between mb-3 cursor-pointer">
+                <span className="text-gray-700">Local Guide</span>
+                <input type="checkbox" className="w-5 h-5 accent-[#FF385C]" checked={addons.localGuide} onChange={(e) => setAddons({...addons, localGuide: e.target.checked})} />
+              </label>
+
+              <label className="flex items-center justify-between mb-3 cursor-pointer">
+                <span className="text-gray-700">Cultural Attire</span>
+                <input type="checkbox" className="w-5 h-5 accent-[#FF385C]" checked={addons.culturalAttire} onChange={(e) => setAddons({...addons, culturalAttire: e.target.checked})} />
+              </label>
+
+              <label className="flex items-center justify-between mb-3 cursor-pointer">
+                <span className="text-gray-700">Food Curation</span>
+                <input type="checkbox" className="w-5 h-5 accent-[#FF385C]" checked={addons.foodCuration} onChange={(e) => setAddons({...addons, foodCuration: e.target.checked})} />
+              </label>
+            </div>
+
             <Button variant="primary" title="Reserve" onPress={() => {}} />
-            <div className="text-center mt-4">
+            <div className="text-center mt-4 mb-6">
               <span className="text-gray-500 text-sm">You won't be charged yet</span>
+            </div>
+
+            {/* Line Items */}
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between text-gray-700">
+                <span className="underline">₹{listing.price} x {nights} nights</span>
+                <span>₹{quote.baseTotal}</span>
+              </div>
+              
+              {quote.addonsTotal > 0 && (
+                <div className="flex justify-between text-gray-700">
+                  <span className="underline">Custom Add-ons</span>
+                  <span>₹{quote.addonsTotal}</span>
+                </div>
+              )}
+
+              <div className="flex justify-between text-gray-700">
+                <span className="underline">Service fee</span>
+                <span>₹{quote.serviceFee}</span>
+              </div>
+
+              <div className="flex justify-between text-gray-700">
+                <span className="underline">Taxes</span>
+                <span>₹{quote.taxes}</span>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-gray-200 flex justify-between">
+              <span className="text-lg font-bold text-[#222222]">Total</span>
+              <span className="text-lg font-bold text-[#222222]">₹{quote.grandTotal}</span>
             </div>
           </div>
         </div>
