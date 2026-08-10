@@ -8,5 +8,6 @@ const router = Router();
 router.use(authGuard);
 
 router.patch('/switch-role', UserController.switchRole);
+router.patch('/profile', UserController.updateProfile);
 
 export default router;

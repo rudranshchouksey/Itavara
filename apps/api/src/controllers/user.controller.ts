@@ -36,4 +36,33 @@ export class UserController {
       res.status(500).json({ error: 'Internal server error' });
     }
   }
+
+  static async updateProfile(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      const { bio, hometown, profilePhoto, name } = req.body;
+
+      const dataToUpdate: any = {};
+      if (bio !== undefined) dataToUpdate.bio = bio;
+      if (hometown !== undefined) dataToUpdate.hometown = hometown;
+      if (profilePhoto !== undefined) dataToUpdate.profilePhoto = profilePhoto;
+      if (name !== undefined) dataToUpdate.name = name;
+
+      const user = await prisma.user.update({
+        where: { id: userId },
+        data: dataToUpdate,
+      });
+
+      const { passwordHash, ...safeUser } = user;
+      res.status(200).json(safeUser);
+    } catch (error: any) {
+      res.status(500).json({ error: 'Internal server error updating profile' });
+    }
+  }
 }
+
