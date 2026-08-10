@@ -1,6 +1,7 @@
 export * from '@itvara/db';
 export * from './auth';
 export * from './verification';
+export * from './user';
 
 export interface SearchListingsDTO {
   latitude?: number;

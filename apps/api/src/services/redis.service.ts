@@ -55,4 +55,21 @@ export async function revokeAllSessions(userId: string): Promise<void> {
   await redis.del(key);
 }
 
+/**
+ * Sets the active role for a user in Redis (overrides JWT role).
+ */
+export async function setActiveRole(userId: string, role: string): Promise<void> {
+  const key = `active_role:${userId}`;
+  // Cache for 7 days to match refresh token lifespan
+  await redis.set(key, role, 'EX', 7 * 24 * 60 * 60);
+}
+
+/**
+ * Gets the active role for a user from Redis.
+ */
+export async function getActiveRole(userId: string): Promise<string | null> {
+  const key = `active_role:${userId}`;
+  return redis.get(key);
+}
+
 export default redis;
