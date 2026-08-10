@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { PaymentService, PaymentProviderType } from '../services/payment.service';
+import { ReceiptService } from '../services/receipt.service';
+import { EmailService } from '../services/email.service';
 
 const prisma = new PrismaClient();
 
@@ -93,24 +95,33 @@ export const verifyPayment = async (req: Request, res: Response) => {
     }
 
     // 3. Update Transaction and Booking securely in a transaction
-    await prisma.$transaction(async (tx) => {
+    const booking = await prisma.$transaction(async (tx) => {
       const transaction = await tx.transaction.findUnique({
         where: { bookingId }
       });
 
       if (!transaction) throw new Error('Transaction not found');
-      if (transaction.status === 'SUCCESS') return; // Already processed
+      if (transaction.status === 'SUCCESS') return null; // Already processed
 
       await tx.transaction.update({
         where: { bookingId },
         data: { status: 'SUCCESS' }
       });
 
-      await tx.booking.update({
+      return await tx.booking.update({
         where: { id: bookingId },
+        include: { user: true, listing: true },
         data: { status: 'CONFIRMED' }
       });
     });
+
+    // 4. Trigger async side-effects if newly confirmed
+    if (booking && booking.user?.email) {
+      // Intentionally not awaiting these so the webhook responds quickly
+      ReceiptService.generatePDF(booking).then(pdfBuffer => {
+        EmailService.sendBookingConfirmation(booking.user.email, booking, pdfBuffer).catch(console.error);
+      }).catch(console.error);
+    }
 
     res.status(200).json({ received: true, verified: true });
   } catch (error: any) {
