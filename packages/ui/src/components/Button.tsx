@@ -4,6 +4,7 @@ import * as Haptics from 'expo-haptics';
 
 interface ButtonProps extends TouchableOpacityProps {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  className?: string;
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   title: string;
