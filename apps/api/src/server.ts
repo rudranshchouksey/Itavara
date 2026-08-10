@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes';
+import verificationRoutes from './routes/verification.routes';
 import { authGuard } from './middleware/authGuard';
 
 const app = express();
@@ -20,8 +21,9 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-// Auth routes
+// Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/verification', verificationRoutes);
 
 // Example of a protected route using the authGuard
 app.get('/api/me', authGuard, (req, res) => {
@@ -31,3 +33,4 @@ app.get('/api/me', authGuard, (req, res) => {
 app.listen(PORT, () => {
   console.log(`API Server running on port ${PORT}`);
 });
+
