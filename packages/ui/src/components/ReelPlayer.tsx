@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
-import { Heart, MessageCircle, Share2, MapPin } from 'lucide-react-native';
+import { Heart, MessageCircle, Share2 } from 'lucide-react-native';
+import { BookablePill } from './BookablePill';
 
 const { height: windowHeight, width: windowWidth } = Dimensions.get('window');
 
@@ -125,17 +126,13 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({
 
         {/* Commerce Pipeline / Tagged Listing */}
         {taggedListing && (
-          <TouchableOpacity 
-            className="flex-row items-center bg-black/60 rounded-xl p-3 border border-white/10 mt-2"
-            onPress={() => onViewListing && onViewListing(taggedListing.id)}
-          >
-            <MapPin size={16} color="#FF385C" className="mr-2" />
-            <View className="flex-1">
-              <Text className="text-white text-sm font-semibold">{taggedListing.title}</Text>
-              <Text className="text-neutral-300 text-xs">${taggedListing.pricePerNight} / night</Text>
-            </View>
-            <Text className="text-[#FF385C] font-semibold ml-2">Book</Text>
-          </TouchableOpacity>
+          <BookablePill
+            id={taggedListing.id}
+            title={taggedListing.title}
+            price={taggedListing.pricePerNight}
+            type="STAY"
+            onPress={onViewListing}
+          />
         )}
       </View>
     </View>

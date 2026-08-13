@@ -8,6 +8,7 @@ export * from './src/components/Typography';
 export * from './src/components/ReelPlayer';
 export * from './src/components/MiniBlogEditor';
 export * from './src/components/TagSelector';
+export * from './src/components/BookablePill';
 export * from './src/components/SearchBar';
 export * from './src/hooks/useUserRole';
 
