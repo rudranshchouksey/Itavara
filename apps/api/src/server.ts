@@ -9,6 +9,7 @@ import listingsRoutes from './routes/listings.routes';
 import bookingsRoutes from './routes/bookings.routes';
 import paymentsRoutes from './routes/payments.routes';
 import mediaRoutes from './routes/media.routes';
+import feedRoutes from './routes/feed.routes';
 import { authGuard } from './middleware/authGuard';
 
 const app = express();
@@ -42,6 +43,7 @@ app.use('/api/listings', listingsRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/media', mediaRoutes);
+app.use('/api/feed', feedRoutes);
 
 // Example of a protected route using the authGuard
 app.get('/api/me', authGuard, (req, res) => {
