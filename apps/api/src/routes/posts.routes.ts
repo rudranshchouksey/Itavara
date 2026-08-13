@@ -10,5 +10,6 @@ router.get('/mini-blog/:id', PostsController.getMiniBlog);
 // Protected routes
 router.use(authGuard);
 router.post('/mini-blog', PostsController.createMiniBlog);
+router.post('/:id/tags', PostsController.addTagToPost);
 
 export default router;

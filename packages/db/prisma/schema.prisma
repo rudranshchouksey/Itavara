@@ -162,6 +162,8 @@ model Tag {
   taggedGuideId   String?  // No Guide model defined yet
   taggedUserId    String?
   taggedUser      User?    @relation(fields: [taggedUserId], references: [id], onDelete: SetNull)
+  timestamp       Float?   // Second in the video reel where this tag appears
+  inlinePosition  Int?     // Paragraph index in the mini-blog where this tag is attached
 }
 
 model Comment {

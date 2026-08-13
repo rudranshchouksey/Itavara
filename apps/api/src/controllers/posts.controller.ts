@@ -84,4 +84,64 @@ export class PostsController {
       res.status(500).json({ error: 'Internal server error fetching mini-blog' });
     }
   }
+
+  static async addTagToPost(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      const { id: postId } = req.params;
+      const { taggedListingId, taggedGuideId, timestamp, inlinePosition } = req.body;
+
+      if (!taggedListingId && !taggedGuideId) {
+        res.status(400).json({ error: 'Must provide either taggedListingId or taggedGuideId' });
+        return;
+      }
+
+      // Verify the post belongs to the user
+      const post = await prisma.post.findUnique({
+        where: { id: postId },
+        select: { userId: true, type: true }
+      });
+
+      if (!post) {
+        res.status(404).json({ error: 'Post not found' });
+        return;
+      }
+
+      if (post.userId !== userId) {
+        res.status(403).json({ error: 'Forbidden: You can only tag your own posts' });
+        return;
+      }
+
+      // Ensure timestamp is only used for REEL, and inlinePosition for MINI_BLOG
+      if (timestamp !== undefined && post.type !== 'REEL') {
+        res.status(400).json({ error: 'Timestamps can only be used on REEL posts' });
+        return;
+      }
+      
+      if (inlinePosition !== undefined && post.type !== 'MINI_BLOG') {
+        res.status(400).json({ error: 'Inline positions can only be used on MINI_BLOG posts' });
+        return;
+      }
+
+      const tag = await prisma.tag.create({
+        data: {
+          postId,
+          taggedListingId,
+          taggedGuideId,
+          timestamp,
+          inlinePosition
+        }
+      });
+
+      res.status(201).json({ data: tag });
+    } catch (error: any) {
+      console.error('Error adding tag to post:', error);
+      res.status(500).json({ error: 'Internal server error adding tag' });
+    }
+  }
 }
