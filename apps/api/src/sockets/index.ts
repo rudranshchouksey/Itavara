@@ -5,6 +5,11 @@ import redis from '../services/redis.service';
 import { AuthService } from '../services/auth.service';
 import { prisma } from '@itvara/db';
 import { env } from '@itvara/config';
+import { JwtPayload } from '@itvara/types';
+
+export interface AuthenticatedSocket extends Socket {
+  user?: JwtPayload;
+}
 
 let io: Server;
 
@@ -22,7 +27,7 @@ export function initSocketIO(httpServer: HttpServer): Server {
   io.adapter(createAdapter(pubClient, subClient));
 
   // Authentication Middleware
-  io.use((socket, next) => {
+  io.use((socket: AuthenticatedSocket, next) => {
     const token = socket.handshake.auth.token;
     if (!token) {
       return next(new Error('Authentication error: Missing token'));
@@ -30,15 +35,16 @@ export function initSocketIO(httpServer: HttpServer): Server {
 
     try {
       const payload = AuthService.verifyJwt(token);
-      (socket as any).user = payload;
+      socket.user = payload;
       next();
     } catch (err) {
       return next(new Error('Authentication error: Invalid or expired token'));
     }
   });
 
-  io.on('connection', (socket: Socket) => {
-    const user = (socket as any).user;
+  io.on('connection', (socket: AuthenticatedSocket) => {
+    const user = socket.user;
+    if (!user) return socket.disconnect();
     console.log(`User connected to Socket.io: ${user.userId}`);
 
     socket.on('join_conversation', async ({ conversationId }) => {

@@ -11,7 +11,9 @@ export default function MessageScreen() {
   useEffect(() => {
     // In a real app, securely get this from SecureStore
     const token = 'mock-mobile-token';
-    const API_URL = process.env.EXPO_PUBLIC_WS_URL || 'http://localhost:4000';
+    const API_URL = process.env.EXPO_PUBLIC_WS_URL;
+    
+    if (!API_URL) throw new Error('EXPO_PUBLIC_WS_URL is not defined in .env');
 
     const newSocket = io(API_URL, {
       auth: { token },
