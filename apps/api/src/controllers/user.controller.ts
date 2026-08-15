@@ -1,9 +1,6 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@itvara/db';
+import { prisma } from '@itvara/db';
 import { setActiveRole } from '../services/redis.service';
-
-const prisma = new PrismaClient();
-
 export class UserController {
   
   static async switchRole(req: Request, res: Response): Promise<void> {
