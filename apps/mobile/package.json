@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@itvara/config": "workspace:*",
+    "@types/node": "^26.2.0",
     "@types/react": "^18.0.0"
   }
 }
