@@ -1,3 +1,4 @@
+/// <reference path="./src/env.d.ts" />
 export * from './src/components/Button';
 export * from './src/components/TextInput';
 export * from './src/components/Badge';

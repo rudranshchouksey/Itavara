@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { SearchBar, Typography, ListingCard } from '@itvara/ui';
 import { useSearchParams } from 'next/navigation';
 
-export default function ExplorePage() {
+function ExplorePageContent() {
   const searchParams = useSearchParams();
   const hasSearchParams = searchParams && (searchParams.get('destination') || searchParams.get('adults'));
   const [flexibleListings, setFlexibleListings] = useState<any[]>([]);
@@ -56,15 +56,12 @@ export default function ExplorePage() {
                   flexibleListings.map(listing => (
                     <ListingCard
                       key={listing.id}
-                      listing={{
-                        id: listing.id,
-                        title: listing.title,
-                        price: Number(listing.pricePerNight),
-                        rating: 4.8, // Mocked rating
-                        imageUrls: ['https://via.placeholder.com/400x300?text=Retreat'],
-                        isSuperhost: true,
-                        amenities: listing.type
-                      }}
+                      images={['https://via.placeholder.com/400x300?text=Retreat']}
+                      title={listing.title}
+                      category={listing.type}
+                      pricePerNight={Number(listing.pricePerNight)}
+                      latitude={20}
+                      longitude={78}
                       onPress={() => console.log('Navigate to listing', listing.id)}
                     />
                   ))
@@ -77,5 +74,13 @@ export default function ExplorePage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ExplorePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
+      <ExplorePageContent />
+    </Suspense>
   );
 }

@@ -3,11 +3,9 @@ import 'react-native';
 declare module 'react-native' {
   interface ViewProps {
     className?: string;
-    suppressHydrationWarning?: boolean;
   }
   interface TextProps {
     className?: string;
-    suppressHydrationWarning?: boolean;
   }
   interface TouchableOpacityProps {
     className?: string;
