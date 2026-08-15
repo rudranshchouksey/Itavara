@@ -1,13 +1,18 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: [
     '@itvara/ui',
+    '@itvara/utils',
+    '@itvara/types',
     'react-native',
     'react-native-web',
-    'expo-av',
     'expo-router',
-    'expo-haptics',
-    'expo-asset',
     'lucide-react-native',
     'react-native-svg',
     'nativewind',
@@ -17,7 +22,8 @@ const nextConfig = {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
       'react-native$': 'react-native-web',
-      '@react-native/assets-registry/registry.js': 'react-native-web/dist/modules/AssetRegistry/index.js'
+      '@react-native/assets-registry/registry.js': 'react-native-web/dist/modules/AssetRegistry/index.js',
+      'expo-haptics$': path.resolve(__dirname, 'mock-haptics.js')
     };
     config.resolve.extensions = [
       '.web.js',

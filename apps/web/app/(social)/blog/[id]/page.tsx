@@ -16,8 +16,9 @@ async function getMiniBlog(id: string) {
   }
 }
 
-export default async function BlogPage({ params }: { params: { id: string } }) {
-  const post = await getMiniBlog(params.id);
+export default async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const post = await getMiniBlog(resolvedParams.id);
 
   if (!post) {
     notFound();
