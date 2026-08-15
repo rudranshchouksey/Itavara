@@ -11,5 +11,6 @@ router.get('/mini-blog/:id', PostsController.getMiniBlog);
 router.use(authGuard);
 router.post('/mini-blog', PostsController.createMiniBlog);
 router.post('/:id/tags', PostsController.addTagToPost);
-
+router.post('/:id/travel-buddies', PostsController.addTravelBuddy);
+router.patch('/travel-buddies/:tagId/status', PostsController.updateTravelBuddyStatus);
 export default router;

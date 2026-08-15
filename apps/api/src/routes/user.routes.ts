@@ -9,5 +9,6 @@ router.use(authGuard);
 
 router.patch('/switch-role', UserController.switchRole);
 router.patch('/profile', UserController.updateProfile);
+router.get('/profile/posts', UserController.getProfilePosts);
 
 export default router;

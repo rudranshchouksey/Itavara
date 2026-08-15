@@ -100,6 +100,13 @@ export class PostsController {
             include: {
               taggedListing: true,
             }
+          },
+          travelBuddyTags: {
+            include: {
+              taggedUser: {
+                select: { id: true, name: true, profilePhoto: true }
+              }
+            }
           }
         }
       });
@@ -178,6 +185,94 @@ export class PostsController {
     } catch (error: any) {
       console.error('Error adding tag to post:', error);
       res.status(500).json({ error: 'Internal server error adding tag' });
+    }
+  }
+
+  static async addTravelBuddy(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      const { id: postId } = req.params;
+      const { taggedUserId } = req.body;
+
+      if (!taggedUserId) {
+        res.status(400).json({ error: 'taggedUserId is required' });
+        return;
+      }
+
+      const post = await prisma.post.findUnique({
+        where: { id: postId },
+        select: { userId: true }
+      });
+
+      if (!post) {
+        res.status(404).json({ error: 'Post not found' });
+        return;
+      }
+
+      if (post.userId !== userId) {
+        res.status(403).json({ error: 'Forbidden: You can only tag buddies on your own posts' });
+        return;
+      }
+
+      const buddyTag = await prisma.travelBuddyTag.create({
+        data: {
+          postId,
+          taggedUserId,
+          status: 'PENDING'
+        }
+      });
+
+      res.status(201).json({ data: buddyTag });
+    } catch (error: any) {
+      console.error('Error adding travel buddy:', error);
+      res.status(500).json({ error: 'Internal server error adding travel buddy' });
+    }
+  }
+
+  static async updateTravelBuddyStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      const { tagId } = req.params;
+      const { status } = req.body; // 'ACCEPTED' or 'REJECTED'
+
+      if (!['ACCEPTED', 'REJECTED'].includes(status)) {
+        res.status(400).json({ error: 'Invalid status. Must be ACCEPTED or REJECTED' });
+        return;
+      }
+
+      const buddyTag = await prisma.travelBuddyTag.findUnique({
+        where: { id: tagId }
+      });
+
+      if (!buddyTag) {
+        res.status(404).json({ error: 'Travel buddy tag not found' });
+        return;
+      }
+
+      if (buddyTag.taggedUserId !== userId) {
+        res.status(403).json({ error: 'Forbidden: You can only update your own travel buddy tags' });
+        return;
+      }
+
+      const updatedTag = await prisma.travelBuddyTag.update({
+        where: { id: tagId },
+        data: { status }
+      });
+
+      res.status(200).json({ data: updatedTag });
+    } catch (error: any) {
+      console.error('Error updating travel buddy status:', error);
+      res.status(500).json({ error: 'Internal server error updating travel buddy status' });
     }
   }
 }

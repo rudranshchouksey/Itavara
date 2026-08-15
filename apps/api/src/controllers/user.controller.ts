@@ -64,5 +64,54 @@ export class UserController {
       res.status(500).json({ error: 'Internal server error updating profile' });
     }
   }
+
+  static async getProfilePosts(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      const posts = await prisma.post.findMany({
+        where: {
+          OR: [
+            { userId },
+            {
+              travelBuddyTags: {
+                some: {
+                  taggedUserId: userId,
+                  status: 'ACCEPTED'
+                }
+              }
+            }
+          ]
+        },
+        include: {
+          user: {
+            select: { id: true, name: true, profilePhoto: true }
+          },
+          travelBuddyTags: {
+            include: {
+              taggedUser: {
+                select: { id: true, name: true, profilePhoto: true }
+              }
+            }
+          },
+          _count: {
+            select: { likes: true, comments: true }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      });
+
+      res.status(200).json({ data: posts });
+    } catch (error: any) {
+      console.error('Error fetching profile posts:', error);
+      res.status(500).json({ error: 'Internal server error fetching profile posts' });
+    }
+  }
 }
 

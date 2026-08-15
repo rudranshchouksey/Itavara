@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Avatar, Button, Typography, Modal, TextInput } from '@itvara/ui';
+import Link from 'next/link';
 // Mock fetch for demonstration
 // import { useUserRole } from '@itvara/ui/src/hooks/useUserRole';
 
@@ -14,9 +15,19 @@ export default function ProfilePage() {
     joinDate: 'Joined Aug 2024',
     profilePhoto: null,
   });
+  const [posts, setPosts] = useState<any[]>([]);
 
   const MOCK_BADGES = ['VERIFIED_TRAVELER'];
   
+  useEffect(() => {
+    fetch('http://localhost:4000/api/users/profile/posts')
+      .then(res => res.json())
+      .then(data => {
+        if (data.data) setPosts(data.data);
+      })
+      .catch(console.error);
+  }, []);
+
   // Handlers
   const handleSaveProfile = async () => {
     // In a real app, call PATCH /api/users/profile
@@ -66,16 +77,48 @@ export default function ProfilePage() {
         </Typography>
       </div>
 
-      {/* Timeline Photos (Mock) */}
+      {/* Timeline Posts */}
       <div className="bg-white p-6 rounded-2xl shadow-sm mb-8">
-        <Typography variant="h2" className="text-xl font-semibold mb-4 text-[#222222]">Timeline Photos</Typography>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-              <div className="w-full h-full bg-gray-300" />
-            </div>
-          ))}
-        </div>
+        <Typography variant="h2" className="text-xl font-semibold mb-4 text-[#222222]">Timeline</Typography>
+        {posts.length === 0 ? (
+          <Typography variant="body" className="text-gray-500">No posts yet.</Typography>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {posts.map((post) => {
+              const isCoAuthored = post.userId !== 'current_user_id_placeholder' && post.travelBuddyTags?.some((t: any) => t.status === 'ACCEPTED');
+              
+              return (
+                <Link href={`/blog/${post.id}`} key={post.id} className="block group">
+                  <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
+                    {post.mediaUrls?.[0] ? (
+                      <div className="w-full h-48 bg-gray-200 relative">
+                        <img src={post.mediaUrls[0]} alt="Post" className="w-full h-full object-cover" />
+                        {isCoAuthored && (
+                          <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-md text-white text-xs font-semibold">
+                            Co-Authored Trip
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="w-full h-48 bg-gray-200 flex items-center justify-center relative">
+                        <Typography variant="body" className="text-gray-400">No Image</Typography>
+                        {isCoAuthored && (
+                          <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-md text-white text-xs font-semibold">
+                            Co-Authored Trip
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <Typography variant="body" className="font-semibold text-[#222222] truncate">{post.title || 'Untitled Trip'}</Typography>
+                      <Typography variant="caption" className="text-gray-500">{new Date(post.createdAt).toLocaleDateString()}</Typography>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Public Reviews (Mock) */}

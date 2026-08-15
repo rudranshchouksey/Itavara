@@ -24,15 +24,16 @@ model User {
   bio          String?
   hometown     String?
   role         Role               @default(GUEST)
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  verification VerificationBadge?
-  listings     Listing[]
-  bookings     Booking[]
-  posts        Post[]
-  tags         Tag[]
-  comments     Comment[]
-  likes        Like[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  verification      VerificationBadge?
+  listings          Listing[]
+  bookings          Booking[]
+  posts             Post[]
+  tags              Tag[]
+  comments          Comment[]
+  likes             Like[]
+  receivedBuddyTags TravelBuddyTag[]
 }
 
 model VerificationBadge {
@@ -145,12 +146,13 @@ model Post {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      PostType
   title     String?
-  content   String?   @db.Text
-  mediaUrls String[]
-  createdAt DateTime  @default(now())
-  tags      Tag[]
-  comments  Comment[]
-  likes     Like[]
+  content         String?   @db.Text
+  mediaUrls       String[]
+  createdAt       DateTime  @default(now())
+  tags            Tag[]
+  comments        Comment[]
+  likes           Like[]
+  travelBuddyTags TravelBuddyTag[]
 }
 
 model Tag {
@@ -185,4 +187,22 @@ model Like {
   createdAt DateTime @default(now())
 
   @@unique([postId, userId])
+}
+
+enum TravelBuddyStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model TravelBuddyTag {
+  id           String            @id @default(uuid())
+  postId       String
+  post         Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
+  taggedUserId String
+  taggedUser   User              @relation(fields: [taggedUserId], references: [id], onDelete: Cascade)
+  status       TravelBuddyStatus @default(PENDING)
+  createdAt    DateTime          @default(now())
+
+  @@unique([postId, taggedUserId])
 }

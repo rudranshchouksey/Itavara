@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { View, ScrollView, Text, Pressable, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, Text, Pressable, Alert, Image } from 'react-native';
 import { Avatar, Button, Typography, Modal, TextInput } from '@itvara/ui';
+import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     name: 'Jane Doe',
@@ -11,8 +13,19 @@ export default function ProfileScreen() {
     joinDate: 'Joined Aug 2024',
     profilePhoto: null,
   });
+  const [posts, setPosts] = useState<any[]>([]);
 
   const MOCK_BADGES = ['VERIFIED_TRAVELER'];
+
+  useEffect(() => {
+    // Replace with real local IP if testing on physical device
+    fetch('http://localhost:4000/api/users/profile/posts')
+      .then(res => res.json())
+      .then(data => {
+        if (data.data) setPosts(data.data);
+      })
+      .catch(console.error);
+  }, []);
 
   const handleSaveProfile = async () => {
     // Call PATCH /api/users/profile
@@ -68,16 +81,56 @@ export default function ProfileScreen() {
           </Typography>
         </View>
 
-        {/* Timeline Photos (Mock) */}
+        {/* Timeline Posts */}
         <View className="bg-white p-5 rounded-2xl shadow-sm mb-4">
           <Typography variant="h2" className="text-lg font-semibold mb-3 text-[#222222]">
-            Timeline Photos
+            Timeline
           </Typography>
-          <View className="flex-row flex-wrap justify-between">
-            {[1, 2, 3, 4].map((i) => (
-              <View key={i} className="w-[48%] aspect-square bg-gray-200 rounded-lg mb-2" />
-            ))}
-          </View>
+          {posts.length === 0 ? (
+            <Typography variant="body" className="text-gray-500">No posts yet.</Typography>
+          ) : (
+            <View className="flex-row flex-wrap justify-between">
+              {posts.map((post) => {
+                const isCoAuthored = post.userId !== 'current_user_id_placeholder' && post.travelBuddyTags?.some((t: any) => t.status === 'ACCEPTED');
+                
+                return (
+                  <Pressable 
+                    key={post.id} 
+                    className="w-[48%] mb-4 bg-gray-50 rounded-xl overflow-hidden border border-gray-100"
+                    onPress={() => router.push(`/blog/${post.id}`)}
+                  >
+                    {post.mediaUrls?.[0] ? (
+                      <View className="w-full h-32 bg-gray-200 relative">
+                        <Image source={{ uri: post.mediaUrls[0] }} className="w-full h-full" resizeMode="cover" />
+                        {isCoAuthored && (
+                          <View className="absolute top-2 left-2 bg-black/60 px-2 py-1 rounded-md">
+                            <Text className="text-white text-[10px] font-semibold">Co-Authored</Text>
+                          </View>
+                        )}
+                      </View>
+                    ) : (
+                      <View className="w-full h-32 bg-gray-200 flex items-center justify-center relative">
+                        <Typography variant="body" className="text-gray-400 text-xs">No Image</Typography>
+                        {isCoAuthored && (
+                          <View className="absolute top-2 left-2 bg-black/60 px-2 py-1 rounded-md">
+                            <Text className="text-white text-[10px] font-semibold">Co-Authored</Text>
+                          </View>
+                        )}
+                      </View>
+                    )}
+                    <View className="p-3">
+                      <Text className="font-semibold text-[#222222] text-sm" numberOfLines={1}>
+                        {post.title || 'Untitled Trip'}
+                      </Text>
+                      <Text className="text-gray-500 text-xs mt-1">
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </Text>
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </View>
+          )}
         </View>
 
         {/* Public Reviews (Mock) */}
