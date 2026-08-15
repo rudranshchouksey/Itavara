@@ -20,10 +20,12 @@
   "devDependencies": {
     "@expo/next-adapter": "^6.0.0",
     "@itvara/config": "workspace:*",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.2.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^19.2.4",
     "babel-preset-expo": "^57.0.7",
+    "postcss": "^8.5.26",
     "typescript": "^5.0.0"
   }
 }
