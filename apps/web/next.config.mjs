@@ -1,10 +1,9 @@
-import { withExpo } from '@expo/next-adapter';
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: [
     '@itvara/ui',
     'react-native',
+    'react-native-web',
     'expo-av',
     'expo-router',
     'expo-haptics',
@@ -12,13 +11,13 @@ const nextConfig = {
     'lucide-react-native',
     'react-native-svg',
     'nativewind',
-    'react-native-css-interop',
-    '@react-native/assets-registry'
+    'react-native-css-interop'
   ],
   webpack: (config) => {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
       'react-native$': 'react-native-web',
+      '@react-native/assets-registry/registry.js': 'react-native-web/dist/modules/AssetRegistry/index.js'
     };
     config.resolve.extensions = [
       '.web.js',
@@ -31,4 +30,4 @@ const nextConfig = {
   },
 };
 
-export default withExpo(nextConfig);
+export default nextConfig;
