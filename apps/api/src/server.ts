@@ -13,18 +13,19 @@ import mediaRoutes from './routes/media.routes';
 import feedRoutes from './routes/feed.routes';
 import postsRoutes from './routes/posts.routes';
 import hostsRoutes from './routes/hosts.routes';
+import { env } from '@itvara/config';
 import { authGuard } from './middleware/authGuard';
 import { initSocketIO } from './sockets';
 
 const app = express();
 const httpServer = createServer(app);
-const PORT = process.env.PORT || 4000;
+const PORT = env.PORT;
 
 // Initialize Socket.io
 initSocketIO(httpServer);
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: env.SOCKET_CORS_ORIGIN,
   credentials: true,
 }));
 

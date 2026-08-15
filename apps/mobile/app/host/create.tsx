@@ -34,9 +34,7 @@ export default function CreateListingWizard() {
   const handleSubmit = async () => {
     try {
       // In a real app, you would use your actual API URL here (e.g. from constants or env)
-      const apiUrl = Platform.OS === 'android' ? 'http://10.0.2.2:4000/api/listings/create' : 'http://localhost:4000/api/listings/create';
-      
-      const res = await fetch(apiUrl, {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_BASE_URL}/listings/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

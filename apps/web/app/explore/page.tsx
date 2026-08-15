@@ -13,7 +13,7 @@ export default function ExplorePage() {
   useEffect(() => {
     if (!hasSearchParams) {
       // Fetch flexible recommendations for zero-state
-      fetch('http://localhost:4000/api/listings/flexible?vibe=spiritual')
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/listings/flexible?vibe=spiritual`)
         .then(res => res.json())
         .then(data => {
           setFlexibleListings(data.listings || []);

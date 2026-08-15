@@ -15,7 +15,7 @@ export default function MobileBlogPage() {
 
   useEffect(() => {
     // In a real app, use SWR or React Query
-    fetch(`http://localhost:4000/api/posts/mini-blog/${id}`)
+    fetch(`${process.env.EXPO_PUBLIC_API_BASE_URL}/posts/mini-blog/${id}`)
       .then(res => res.json())
       .then(data => setPost(data.data))
       .catch(console.error);

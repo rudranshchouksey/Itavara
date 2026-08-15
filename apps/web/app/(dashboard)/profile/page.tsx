@@ -20,7 +20,7 @@ export default function ProfilePage() {
   const MOCK_BADGES = ['VERIFIED_TRAVELER'];
   
   useEffect(() => {
-    fetch('http://localhost:4000/api/users/profile/posts')
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/profile/posts`)
       .then(res => res.json())
       .then(data => {
         if (data.data) setPosts(data.data);

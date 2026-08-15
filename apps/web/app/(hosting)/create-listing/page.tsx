@@ -34,7 +34,7 @@ export default function CreateListingWizard() {
   const handleSubmit = async () => {
     try {
       // Dummy API call to the backend
-      const res = await fetch('http://localhost:4000/api/listings/create', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/listings/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

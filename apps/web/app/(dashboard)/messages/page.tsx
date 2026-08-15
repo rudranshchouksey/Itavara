@@ -11,7 +11,7 @@ export default function MessagesPage() {
     // Read JWT from your auth state/cookies
     const token = localStorage.getItem('access_token') || 'mock-token';
 
-    const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000', {
+    const newSocket = io(process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:4000', {
       auth: { token },
       withCredentials: true,
     });

@@ -19,7 +19,7 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     // Replace with real local IP if testing on physical device
-    fetch('http://localhost:4000/api/users/profile/posts')
+    fetch(`${process.env.EXPO_PUBLIC_API_BASE_URL}/users/profile/posts`)
       .then(res => res.json())
       .then(data => {
         if (data.data) setPosts(data.data);

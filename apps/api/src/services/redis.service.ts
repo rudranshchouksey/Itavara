@@ -1,9 +1,7 @@
 import Redis from 'ioredis';
+import { env } from '@itvara/config';
 
-// Allow overriding via environment variables
-const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
-
-const redis = new Redis(REDIS_URL);
+const redis = new Redis(env.REDIS_URL);
 
 redis.on('error', (err) => {
   console.error('Redis error:', err);

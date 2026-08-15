@@ -11,8 +11,7 @@ export default function ExploreScreen() {
 
   useEffect(() => {
     if (!hasSearchParams) {
-      const apiUrl = Platform.OS === 'android' ? 'http://10.0.2.2:4000' : 'http://localhost:4000';
-      fetch(`${apiUrl}/api/listings/flexible?vibe=spiritual`)
+      fetch(`${process.env.EXPO_PUBLIC_API_BASE_URL}/listings/flexible?vibe=spiritual`)
         .then(res => res.json())
         .then(data => {
           setFlexibleListings(data.listings || []);

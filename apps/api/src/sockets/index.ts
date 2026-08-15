@@ -4,13 +4,14 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import redis from '../services/redis.service';
 import { AuthService } from '../services/auth.service';
 import { prisma } from '@itvara/db';
+import { env } from '@itvara/config';
 
 let io: Server;
 
 export function initSocketIO(httpServer: HttpServer): Server {
   io = new Server(httpServer, {
     cors: {
-      origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+      origin: env.SOCKET_CORS_ORIGIN,
       credentials: true,
     },
   });

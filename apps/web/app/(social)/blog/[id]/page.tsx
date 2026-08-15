@@ -7,7 +7,7 @@ import { InlineItineraryCard } from '@itvara/ui';
 
 async function getMiniBlog(id: string) {
   try {
-    const res = await fetch(`http://localhost:4000/api/posts/mini-blog/${id}`, { cache: 'no-store' });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/posts/mini-blog/${id}`, { cache: 'no-store' });
     if (!res.ok) return null;
     const data = await res.json();
     return data.data;
