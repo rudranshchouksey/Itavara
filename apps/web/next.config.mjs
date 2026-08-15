@@ -1,3 +1,5 @@
+import { withExpo } from '@expo/next-adapter';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: [
@@ -29,4 +31,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withExpo(nextConfig);

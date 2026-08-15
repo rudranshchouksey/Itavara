@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const dir = path.join(__dirname, 'packages/ui/src/components');
+const dir = path.join(__dirname, 'packages/ui/src/hooks');
 
 function addUseClient(folder) {
   const files = fs.readdirSync(folder);

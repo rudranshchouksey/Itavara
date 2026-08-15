@@ -1,3 +1,4 @@
+"use client";
 // Next.js (Web) Implementation
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 

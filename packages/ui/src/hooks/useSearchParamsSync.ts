@@ -1,3 +1,4 @@
+"use client";
 // Expo Router Implementation
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
