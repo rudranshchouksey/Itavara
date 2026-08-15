@@ -17,6 +17,8 @@ import { env } from '@itvara/config';
 import { authGuard } from './middleware/authGuard';
 import { initSocketIO } from './sockets';
 
+import { serializeResponseMiddleware } from './middleware/serializeResponse';
+
 const app = express();
 const httpServer = createServer(app);
 const PORT = env.PORT;
@@ -37,6 +39,9 @@ app.use(express.json({
   }
 }));
 app.use(cookieParser());
+
+// Apply global serialization middleware
+app.use(serializeResponseMiddleware);
 
 // Health check
 app.get('/health', (req, res) => {
