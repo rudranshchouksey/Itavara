@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Wallet, TrendingUp, ArrowRight } from 'lucide-react-native';
@@ -26,7 +27,7 @@ export const CreatorEarningsCard: React.FC<CreatorEarningsCardProps> = ({
             <Text className="text-neutral-400 text-xs font-semibold tracking-wider uppercase mb-1">
               Available Balance
             </Text>
-            <Text className="text-white text-3xl font-bold tracking-tight">
+            <Text suppressHydrationWarning className="text-white text-3xl font-bold tracking-tight">
               {currency}{walletBalance.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
             </Text>
           </View>

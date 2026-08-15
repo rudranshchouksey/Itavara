@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, TouchableOpacityProps, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';

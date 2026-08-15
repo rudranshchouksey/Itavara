@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { View, TextInput as RNTextInput, Text, TouchableOpacity, TextInputProps } from 'react-native';
 

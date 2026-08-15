@@ -1,3 +1,4 @@
+"use client";
 import React, { useRef, useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, Animated, Platform } from 'react-native';
 import { Heart } from 'lucide-react-native';
@@ -90,6 +91,8 @@ export const ListingCard = ({
             showsHorizontalScrollIndicator={false}
             onScroll={handleScroll}
             scrollEventThrottle={16}
+            nestedScrollEnabled={true}
+            directionalLockEnabled={true}
             className="w-full h-full"
           >
             {images.map((img, idx) => (

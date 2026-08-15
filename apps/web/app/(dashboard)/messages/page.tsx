@@ -8,11 +8,14 @@ export default function MessagesPage() {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    // Read JWT from your auth state/cookies
-    const token = localStorage.getItem('access_token') || 'mock-token';
+    // Read JWT from your auth state/cookies properly
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') || '' : '';
 
     const wsUrl = process.env.NEXT_PUBLIC_WS_URL;
-    if (!wsUrl) throw new Error('NEXT_PUBLIC_WS_URL is not defined in .env');
+    if (!wsUrl) {
+      console.warn('NEXT_PUBLIC_WS_URL is not defined in .env');
+      return;
+    }
 
     const newSocket = io(wsUrl, {
       auth: { token },

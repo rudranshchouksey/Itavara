@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { Search, MapPin, X } from 'lucide-react-native';

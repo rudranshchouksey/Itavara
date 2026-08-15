@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { Text, TextProps } from 'react-native';
 

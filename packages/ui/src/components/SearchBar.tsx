@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Pressable, Platform, ScrollView } from 'react-native';
 import { Search, MapPin, Calendar, Users, X } from 'lucide-react-native';

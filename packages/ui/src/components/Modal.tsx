@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { Modal as RNModal, View, TouchableOpacity, Text } from 'react-native';
 

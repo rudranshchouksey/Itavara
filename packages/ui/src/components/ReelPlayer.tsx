@@ -1,3 +1,4 @@
+"use client";
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';

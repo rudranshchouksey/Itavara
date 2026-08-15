@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { ImagePlus, Link as LinkIcon, List, Heading2 } from 'lucide-react-native';

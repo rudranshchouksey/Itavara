@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, Platform } from 'react-native';
 import { MapPin, UserCheck, Calendar } from 'lucide-react-native';

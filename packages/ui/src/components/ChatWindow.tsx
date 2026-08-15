@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { Socket } from 'socket.io-client';
@@ -40,30 +41,34 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
     socket.emit('join_conversation', { conversationId });
 
-    socket.on('new_message', (message: ChatMessage) => {
+    const handleNewMessage = (message: ChatMessage) => {
       setMessages((prev) => [...prev, message]);
       // If we're receiving a message, send a read receipt
       if (message.senderId !== currentUserId) {
         socket.emit('message_read_receipt', { messageId: message.id, conversationId });
       }
-    });
+    };
 
-    socket.on('typing_indicator', ({ userId, isTyping: typingStatus }) => {
+    const handleTypingIndicator = ({ userId, isTyping: typingStatus }: any) => {
       if (userId !== currentUserId) {
         setRecipientTyping(typingStatus);
       }
-    });
+    };
 
-    socket.on('read_receipt', ({ messageId }) => {
+    const handleReadReceipt = ({ messageId }: any) => {
       setMessages((prev) =>
         prev.map((msg) => (msg.id === messageId ? { ...msg, isRead: true } : msg))
       );
-    });
+    };
+
+    socket.on('new_message', handleNewMessage);
+    socket.on('typing_indicator', handleTypingIndicator);
+    socket.on('read_receipt', handleReadReceipt);
 
     return () => {
-      socket.off('new_message');
-      socket.off('typing_indicator');
-      socket.off('read_receipt');
+      socket.off('new_message', handleNewMessage);
+      socket.off('typing_indicator', handleTypingIndicator);
+      socket.off('read_receipt', handleReadReceipt);
     };
   }, [socket, conversationId, currentUserId]);
 
