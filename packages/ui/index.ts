@@ -12,5 +12,6 @@ export * from './src/components/BookablePill';
 export * from './src/components/SearchBar';
 export * from './src/hooks/useUserRole';
 export * from './src/components/InlineItineraryCard';
+export * from './src/components/CreatorEarningsCard';
 
 export const UI_VERSION = "1.0.0";

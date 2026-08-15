@@ -34,6 +34,8 @@ model User {
   comments          Comment[]
   likes             Like[]
   receivedBuddyTags TravelBuddyTag[]
+  wallet            Wallet?
+  referredBookings  Booking[]          @relation("ReferredBookings")
 }
 
 model VerificationBadge {
@@ -115,6 +117,8 @@ model Booking {
   createdAt  DateTime      @default(now())
   addOns     AddOn[]
   transaction Transaction?
+  referrerId String?
+  referrer   User?         @relation("ReferredBookings", fields: [referrerId], references: [id], onDelete: SetNull)
 }
 
 model AddOn {
@@ -205,4 +209,29 @@ model TravelBuddyTag {
   createdAt    DateTime          @default(now())
 
   @@unique([postId, taggedUserId])
+}
+
+enum WalletTransactionType {
+  COMMISSION
+  PAYOUT
+  CREDIT
+}
+
+model Wallet {
+  id           String              @id @default(uuid())
+  userId       String              @unique
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance      Decimal             @default(0)
+  currency     String              @default("INR")
+  transactions WalletTransaction[]
+}
+
+model WalletTransaction {
+  id                 String                @id @default(uuid())
+  walletId           String
+  wallet             Wallet                @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  amount             Decimal
+  type               WalletTransactionType
+  referenceBookingId String?
+  createdAt          DateTime              @default(now())
 }

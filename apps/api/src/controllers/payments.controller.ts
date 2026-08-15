@@ -108,11 +108,37 @@ export const verifyPayment = async (req: Request, res: Response) => {
         data: { status: 'SUCCESS' }
       });
 
-      return await tx.booking.update({
+      const updatedBooking = await tx.booking.update({
         where: { id: bookingId },
         include: { user: true, listing: true },
         data: { status: 'CONFIRMED' }
       });
+
+      if (updatedBooking.referrerId) {
+        const commissionPercentage = 0.05;
+        const commissionAmount = Number(updatedBooking.totalPrice) * commissionPercentage;
+
+        const wallet = await tx.wallet.upsert({
+          where: { userId: updatedBooking.referrerId },
+          update: { balance: { increment: commissionAmount } },
+          create: {
+            userId: updatedBooking.referrerId,
+            balance: commissionAmount,
+            currency: 'INR'
+          }
+        });
+
+        await tx.walletTransaction.create({
+          data: {
+            walletId: wallet.id,
+            amount: commissionAmount,
+            type: 'COMMISSION',
+            referenceBookingId: updatedBooking.id
+          }
+        });
+      }
+
+      return updatedBooking;
     });
 
     // 4. Trigger async side-effects if newly confirmed

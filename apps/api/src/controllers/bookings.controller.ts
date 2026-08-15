@@ -39,7 +39,7 @@ export const createBooking = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { listingId, checkIn, checkOut, basePricePerNight, addons } = req.body;
+    const { listingId, checkIn, checkOut, basePricePerNight, addons, referrerId } = req.body;
 
     if (!listingId || !checkIn || !checkOut || !basePricePerNight) {
       return res.status(400).json({ error: 'Missing required booking fields' });
@@ -103,6 +103,7 @@ export const createBooking = async (req: Request, res: Response) => {
           checkOut: checkOutDate,
           totalPrice: quote.grandTotal,
           status: 'PENDING',
+          referrerId: referrerId || null,
         }
       });
 
