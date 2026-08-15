@@ -25,6 +25,39 @@ export class PostsController {
         return;
       }
 
+      // Validate embedded itinerary JSON blocks
+      const itineraryRegex = /```json itinerary\n([\s\S]*?)\n```/g;
+      let match;
+      const extractedTags: { taggedListingId: string; inlinePosition: number }[] = [];
+      let paragraphIndex = 0;
+      
+      const parts = content.split(/(```json itinerary\n[\s\S]*?\n```)/);
+      for (const part of parts) {
+        if (part.startsWith('```json itinerary')) {
+          try {
+            const jsonStr = part.replace(/```json itinerary\n/, '').replace(/\n```$/, '');
+            const itineraryData = JSON.parse(jsonStr);
+            if (!itineraryData.day || !itineraryData.description) {
+              res.status(400).json({ error: 'Itinerary block missing required fields (day, description).' });
+              return;
+            }
+            if (itineraryData.stay && itineraryData.stay.id) {
+              extractedTags.push({
+                taggedListingId: itineraryData.stay.id,
+                inlinePosition: paragraphIndex
+              });
+            }
+          } catch (e) {
+            res.status(400).json({ error: 'Invalid JSON format in itinerary block.' });
+            return;
+          }
+        } else {
+          // Count paragraphs to keep track of inlinePosition
+          const paragraphs = part.split('\n');
+          paragraphIndex += paragraphs.length - 1;
+        }
+      }
+
       const post = await prisma.post.create({
         data: {
           userId,
@@ -32,6 +65,9 @@ export class PostsController {
           title,
           content,
           mediaUrls: mediaUrls || [],
+          tags: {
+            create: extractedTags
+          }
         }
       });
 

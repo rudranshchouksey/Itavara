@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Heart, MessageCircle, Share2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { InlineItineraryCard } from '@itvara/ui';
 
 async function getMiniBlog(id: string) {
   try {
@@ -31,6 +32,22 @@ export default async function BlogPage({ params }: { params: { id: string } }) {
 
   const wordCount = post.content.trim().split(/\s+/).length;
   const readingTime = Math.ceil(wordCount / 200);
+
+  // Parse blocks separating standard text and itinerary JSON
+  const blocks = [];
+  const parts = post.content.split(/(```json itinerary\n[\s\S]*?\n```)/);
+  for (const part of parts) {
+    if (part.startsWith('```json itinerary')) {
+      try {
+        const jsonStr = part.replace(/```json itinerary\n/, '').replace(/\n```$/, '');
+        blocks.push({ type: 'itinerary', data: JSON.parse(jsonStr) });
+      } catch (e) {
+        blocks.push({ type: 'text', content: part }); // Fallback to text if invalid JSON
+      }
+    } else {
+      blocks.push({ type: 'text', content: part });
+    }
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -82,13 +99,28 @@ export default async function BlogPage({ params }: { params: { id: string } }) {
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Main Content */}
           <article className="flex-1 prose prose-lg prose-rose max-w-none text-gray-800">
-            {/* Very basic markdown rendering fallback */}
-            {post.content.split('\n').map((paragraph: string, idx: number) => {
-              if (paragraph.startsWith('## ')) return <h2 key={idx} className="text-3xl font-bold mt-10 mb-4">{paragraph.replace('## ', '')}</h2>;
-              if (paragraph.startsWith('### ')) return <h3 key={idx} className="text-2xl font-bold mt-8 mb-4">{paragraph.replace('### ', '')}</h3>;
-              if (paragraph.startsWith('- ')) return <li key={idx} className="ml-4 mb-2">{paragraph.replace('- ', '')}</li>;
-              if (paragraph.trim() === '') return <br key={idx} />;
-              return <p key={idx} className="mb-6 leading-relaxed">{paragraph}</p>;
+            {blocks.map((block, blockIdx) => {
+              if (block.type === 'itinerary') {
+                return (
+                  <InlineItineraryCard 
+                    key={blockIdx}
+                    day={block.data.day}
+                    description={block.data.description}
+                    stay={block.data.stay}
+                    guideAvailable={block.data.guideAvailable}
+                    guidePrice={block.data.guidePrice}
+                  />
+                );
+              }
+              
+              // Text block fallback rendering
+              return block.content.split('\n').map((paragraph: string, idx: number) => {
+                if (paragraph.startsWith('## ')) return <h2 key={`${blockIdx}-${idx}`} className="text-3xl font-bold mt-10 mb-4">{paragraph.replace('## ', '')}</h2>;
+                if (paragraph.startsWith('### ')) return <h3 key={`${blockIdx}-${idx}`} className="text-2xl font-bold mt-8 mb-4">{paragraph.replace('### ', '')}</h3>;
+                if (paragraph.startsWith('- ')) return <li key={`${blockIdx}-${idx}`} className="ml-4 mb-2">{paragraph.replace('- ', '')}</li>;
+                if (paragraph.trim() === '') return <br key={`${blockIdx}-${idx}`} />;
+                return <p key={`${blockIdx}-${idx}`} className="mb-6 leading-relaxed">{paragraph}</p>;
+              });
             })}
           </article>
 

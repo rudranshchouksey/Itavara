@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions } from 'rea
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Heart, MessageCircle, Share2, ArrowLeft, ChevronLeft } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { InlineItineraryCard } from '@itvara/ui';
 
 const { width } = Dimensions.get('window');
 
@@ -36,6 +37,22 @@ export default function MobileBlogPage() {
     const progress = contentOffset.y / (contentSize.height - layoutMeasurement.height);
     setScrollProgress(Math.min(Math.max(progress, 0), 1));
   };
+
+  // Parse blocks separating standard text and itinerary JSON
+  const blocks = [];
+  const parts = post.content.split(/(```json itinerary\n[\s\S]*?\n```)/);
+  for (const part of parts) {
+    if (part.startsWith('```json itinerary')) {
+      try {
+        const jsonStr = part.replace(/```json itinerary\n/, '').replace(/\n```$/, '');
+        blocks.push({ type: 'itinerary', data: JSON.parse(jsonStr) });
+      } catch (e) {
+        blocks.push({ type: 'text', content: part }); // Fallback to text if invalid JSON
+      }
+    } else {
+      blocks.push({ type: 'text', content: part });
+    }
+  }
 
   return (
     <View className="flex-1 bg-white">
@@ -92,12 +109,28 @@ export default function MobileBlogPage() {
 
           {/* Markdown Content - Very Basic Parsing for UI representation */}
           <View>
-            {post.content.split('\n').map((paragraph: string, idx: number) => {
-              if (paragraph.startsWith('## ')) return <Text key={idx} className="text-2xl font-bold mt-6 mb-2 text-gray-900">{paragraph.replace('## ', '')}</Text>;
-              if (paragraph.startsWith('### ')) return <Text key={idx} className="text-xl font-bold mt-4 mb-2 text-gray-900">{paragraph.replace('### ', '')}</Text>;
-              if (paragraph.startsWith('- ')) return <Text key={idx} className="text-lg text-gray-700 ml-4 mb-1">• {paragraph.replace('- ', '')}</Text>;
-              if (paragraph.trim() === '') return <View key={idx} className="h-4" />;
-              return <Text key={idx} className="text-lg text-gray-800 leading-7 mb-4">{paragraph}</Text>;
+            {blocks.map((block, blockIdx) => {
+              if (block.type === 'itinerary') {
+                return (
+                  <InlineItineraryCard 
+                    key={blockIdx}
+                    day={block.data.day}
+                    description={block.data.description}
+                    stay={block.data.stay}
+                    guideAvailable={block.data.guideAvailable}
+                    guidePrice={block.data.guidePrice}
+                  />
+                );
+              }
+              
+              // Text block fallback rendering
+              return block.content.split('\n').map((paragraph: string, idx: number) => {
+                if (paragraph.startsWith('## ')) return <Text key={`${blockIdx}-${idx}`} className="text-2xl font-bold mt-6 mb-2 text-gray-900">{paragraph.replace('## ', '')}</Text>;
+                if (paragraph.startsWith('### ')) return <Text key={`${blockIdx}-${idx}`} className="text-xl font-bold mt-4 mb-2 text-gray-900">{paragraph.replace('### ', '')}</Text>;
+                if (paragraph.startsWith('- ')) return <Text key={`${blockIdx}-${idx}`} className="text-lg text-gray-700 ml-4 mb-1">• {paragraph.replace('- ', '')}</Text>;
+                if (paragraph.trim() === '') return <View key={`${blockIdx}-${idx}`} className="h-4" />;
+                return <Text key={`${blockIdx}-${idx}`} className="text-lg text-gray-800 leading-7 mb-4">{paragraph}</Text>;
+              });
             })}
           </View>
         </View>
