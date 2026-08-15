@@ -36,6 +36,7 @@ model User {
   receivedBuddyTags TravelBuddyTag[]
   wallet            Wallet?
   referredBookings  Booking[]          @relation("ReferredBookings")
+  storyHighlights   StoryHighlight[]
 }
 
 model VerificationBadge {
@@ -235,3 +236,14 @@ model WalletTransaction {
   referenceBookingId String?
   createdAt          DateTime              @default(now())
 }
+
+model StoryHighlight {
+  id            String    @id @default(uuid())
+  hostId        String
+  host          User      @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  title         String
+  coverImageUrl String
+  mediaUrls     String[]
+  createdAt     DateTime  @default(now())
+}
+
