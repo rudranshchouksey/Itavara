@@ -14,6 +14,7 @@
     "@itvara/config": "workspace:*",
     "@itvara/db": "workspace:*",
     "@itvara/types": "workspace:*",
+    "@itvara/utils": "workspace:*",
     "@simplewebauthn/server": "^9.0.3",
     "@socket.io/redis-adapter": "^8.3.0",
     "bcryptjs": "^2.4.3",
