@@ -9,7 +9,7 @@ export function useSearchParamsSync() {
   // Convert readonly URLSearchParams to a plain object
   const params: Record<string, string> = {};
   if (searchParams) {
-    searchParams.forEach((value, key) => {
+    searchParams.forEach((value: string, key: string) => {
       params[key] = value;
     });
   }

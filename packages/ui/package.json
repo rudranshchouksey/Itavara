@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
   "exports": {
     ".": "./index.ts",
     "./styles.css": "./styles.css"
@@ -22,8 +26,12 @@
   },
   "devDependencies": {
     "@itvara/config": "workspace:*",
+    "@itvara/types": "workspace:*",
     "@types/react": "^18.0.0",
     "@types/react-native": "^0.72.0",
+    "expo-av": "^14.0.0",
+    "expo-router": "^3.4.10",
+    "next": "^14.1.0",
     "typescript": "^5.0.0"
   }
 }

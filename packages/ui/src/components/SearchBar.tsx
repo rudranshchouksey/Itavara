@@ -8,7 +8,7 @@ export const SearchBar = () => {
   const [expanded, setExpanded] = useState(false);
   
   // Local state for the search inputs
-  const [destination, setDestination] = useState(params.destination || '');
+  const [destination, setDestination] = useState((Array.isArray(params.destination) ? params.destination[0] : params.destination) || '');
   const [adults, setAdults] = useState(Number(params.adults) || 0);
   const [children, setChildren] = useState(Number(params.children) || 0);
   const [pets, setPets] = useState(Number(params.pets) || 0);
@@ -19,7 +19,7 @@ export const SearchBar = () => {
 
   // Sync back local state if URL changes externally (optional, but good practice)
   useEffect(() => {
-    if (params.destination !== undefined) setDestination(params.destination);
+    if (params.destination !== undefined) setDestination(Array.isArray(params.destination) ? params.destination[0] : params.destination);
     if (params.adults !== undefined) setAdults(Number(params.adults));
     if (params.children !== undefined) setChildren(Number(params.children));
     if (params.pets !== undefined) setPets(Number(params.pets));
@@ -54,7 +54,7 @@ export const SearchBar = () => {
       <Pressable 
         onPress={() => setExpanded(true)}
         className="flex-row items-center bg-white rounded-full shadow-sm border border-gray-200 p-2 mx-4 mt-2"
-        style={Platform.OS === 'web' ? { cursor: 'pointer', maxWidth: 400, margin: '0 auto' } : {}}
+        style={Platform.OS === 'web' ? { cursor: 'pointer', maxWidth: 400, marginHorizontal: 'auto' } : {}}
       >
         <View className="bg-gray-100 p-2 rounded-full">
           <Search size={20} color="#222222" />
@@ -75,7 +75,7 @@ export const SearchBar = () => {
   return (
     <View 
       className="bg-white rounded-3xl shadow-lg border border-gray-200 p-4 mx-4 mt-2"
-      style={Platform.OS === 'web' ? { maxWidth: 500, margin: '0 auto', zIndex: 50 } : {}}
+      style={Platform.OS === 'web' ? { maxWidth: 500, marginHorizontal: 'auto', zIndex: 50 } : {}}
     >
       <View className="flex-row justify-between items-center mb-4">
         <Text className="text-xl font-bold text-[#222222]">Search</Text>
@@ -96,12 +96,12 @@ export const SearchBar = () => {
           }}
           className="text-base text-[#222222] outline-none"
           // @ts-ignore - React Native Web specific
-          style={Platform.OS === 'web' ? { outline: 'none' } : {}}
+          style={Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}}
           onFocus={() => setShowAutocomplete(true)}
         />
         {showAutocomplete && destination.length > 0 && (
           <View className="absolute top-20 left-0 right-0 bg-white rounded-xl shadow-md border border-gray-100 z-10">
-            {MOCK_DESTINATIONS.filter(d => d.toLowerCase().includes(destination.toLowerCase())).map((dest) => (
+            {MOCK_DESTINATIONS.filter(d => d.toLowerCase().includes((Array.isArray(destination) ? destination[0] : destination).toLowerCase())).map((dest) => (
               <Pressable 
                 key={dest} 
                 className="flex-row items-center p-3 border-b border-gray-50"

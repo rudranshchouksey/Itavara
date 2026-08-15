@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma, ListingType } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export const createListing = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -25,7 +25,7 @@ export const createListing = async (req: Request, res: Response) => {
     } = req.body;
 
     // 1. Create the Listing and CustomTripOption via Prisma
-    const newListing = await prisma.$transaction(async (tx) => {
+    const newListing = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // First, find or create amenities if needed. For this example, we assume they exist or we just connect/create
       const amenityConnectOrCreate = amenities ? amenities.map((name: string) => ({
         where: { id: name }, // Typically we'd have a unique constraint on name, but let's just assume we're creating or connecting appropriately. For simplicity, we just create new ones or skip. Actually, if we don't have a unique constraint on Amenity name, we just create. 
@@ -161,7 +161,7 @@ export const getFlexibleListings = async (req: Request, res: Response) => {
     // Query Prisma
     const listings = await prisma.listing.findMany({
       where: {
-        type: { in: allowedTypes as any },
+        type: { in: allowedTypes as ListingType[] },
         ...(maxPrice ? { pricePerNight: { lte: maxPrice } } : {})
       },
       take: 10, // Recommend top 10 unique stays

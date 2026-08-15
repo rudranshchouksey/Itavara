@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { PaymentService, PaymentProviderType } from '../services/payment.service';
 import { ReceiptService } from '../services/receipt.service';
 import { EmailService } from '../services/email.service';
@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 export const initiatePayment = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -95,7 +95,7 @@ export const verifyPayment = async (req: Request, res: Response) => {
     }
 
     // 3. Update Transaction and Booking securely in a transaction
-    const booking = await prisma.$transaction(async (tx) => {
+    const booking = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const transaction = await tx.transaction.findUnique({
         where: { bookingId }
       });

@@ -34,7 +34,7 @@ export const calculateQuote = async (req: Request, res: Response) => {
 
 export const createBooking = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -65,7 +65,7 @@ export const createBooking = async (req: Request, res: Response) => {
 
     const quote = calculateTripQuote(params);
 
-    const bookingResult = await prisma.$transaction(async (tx) => {
+    const bookingResult = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 1. Pessimistic Row Lock: Lock the Listing row
       // This ensures no other concurrent transaction can lock this listing for booking until this completes.
       await tx.$executeRawUnsafe(`SELECT id FROM "Listing" WHERE id = $1 FOR UPDATE`, listingId);

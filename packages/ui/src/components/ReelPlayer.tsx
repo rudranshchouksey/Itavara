@@ -72,21 +72,21 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({
         <Video
           ref={videoRef}
           source={{ uri: videoUrl }}
-          style={StyleSheet.absoluteFillObject}
+          style={StyleSheet.absoluteFill}
           resizeMode={ResizeMode.COVER}
           isLooping
           isMuted={isMuted}
           shouldPlay={isActive}
         />
       ) : (
-        <View style={StyleSheet.absoluteFillObject} className="bg-neutral-800 items-center justify-center">
+        <View style={StyleSheet.absoluteFill} className="bg-neutral-800 items-center justify-center">
           <Text className="text-white">Media not available</Text>
         </View>
       )}
 
       {/* Overlay controls - Touch to mute/unmute */}
       <TouchableOpacity 
-        style={StyleSheet.absoluteFillObject} 
+        style={StyleSheet.absoluteFill} 
         activeOpacity={1} 
         onPress={() => setIsMuted(!isMuted)}
       />

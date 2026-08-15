@@ -16,7 +16,7 @@ export function useSearchParamsSync() {
     });
 
     // In Expo Router, setParams updates query parameters of the current route
-    router.setParams(updated);
+    router.setParams(updated as Record<string, string>);
   };
 
   return { params, updateParams };
