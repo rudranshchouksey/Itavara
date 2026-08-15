@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient, Prisma, ListingType } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma, Prisma, ListingType } from '@itvara/db';
 
 export const createListing = async (req: Request, res: Response) => {
   try {

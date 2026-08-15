@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { calculateTripQuote, PricingParams } from '@itvara/utils';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma, Prisma } from '@itvara/db';
 
 export const calculateQuote = async (req: Request, res: Response) => {
   try {

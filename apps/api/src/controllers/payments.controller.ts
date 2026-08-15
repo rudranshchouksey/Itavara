@@ -1,10 +1,8 @@
 import { Request, Response } from 'express';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { prisma, Prisma } from '@itvara/db';
 import { PaymentService, PaymentProviderType } from '../services/payment.service';
 import { ReceiptService } from '../services/receipt.service';
 import { EmailService } from '../services/email.service';
-
-const prisma = new PrismaClient();
 
 export const initiatePayment = async (req: Request, res: Response) => {
   try {
