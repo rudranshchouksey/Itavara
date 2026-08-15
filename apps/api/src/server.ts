@@ -1,4 +1,5 @@
 import express from 'express';
+import { createServer } from 'http';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes';
@@ -13,9 +14,14 @@ import feedRoutes from './routes/feed.routes';
 import postsRoutes from './routes/posts.routes';
 import hostsRoutes from './routes/hosts.routes';
 import { authGuard } from './middleware/authGuard';
+import { initSocketIO } from './sockets';
 
 const app = express();
+const httpServer = createServer(app);
 const PORT = process.env.PORT || 4000;
+
+// Initialize Socket.io
+initSocketIO(httpServer);
 
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
@@ -54,7 +60,7 @@ app.get('/api/me', authGuard, (req, res) => {
   res.status(200).json({ user: req.user });
 });
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`API Server running on port ${PORT}`);
 });
 
