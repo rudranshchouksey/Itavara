@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useMemo } from 'react';
 import { View, Text, Modal, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
 
@@ -20,6 +21,7 @@ export interface RentalSelectorWidgetProps {
   isLoading: boolean;
   onClose: () => void;
   onBook: (itemId: string, selectedSize: string | null, days: number, totalPrice: number) => void;
+  className?: string;
 }
 
 export const RentalSelectorWidget: React.FC<RentalSelectorWidgetProps> = ({
@@ -29,6 +31,7 @@ export const RentalSelectorWidget: React.FC<RentalSelectorWidgetProps> = ({
   isLoading,
   onClose,
   onBook,
+  className,
 }) => {
   const [activeTab, setActiveTab] = useState<'VEHICLES' | 'ATTIRE'>('VEHICLES');
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
@@ -55,7 +58,7 @@ export const RentalSelectorWidget: React.FC<RentalSelectorWidgetProps> = ({
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
-      <View className="flex-1 justify-end bg-black/50">
+      <View className={`flex-1 justify-end bg-black/50 ${className || ''}`}>
         <View className="bg-white rounded-t-3xl h-[85%] overflow-hidden shadow-xl">
           {/* Header */}
           <View className="px-6 pt-6 pb-4 border-b border-gray-100 flex-row justify-between items-center">

@@ -39,6 +39,11 @@ export const cleanData = (obj: any): any => {
   // Date handles itself cleanly in JSON, but if we wanted custom formats we would do it here
   if (obj instanceof Date) return obj.toISOString();
   
+  // Handle Prisma Decimal.js instances
+  if (obj.constructor && obj.constructor.name === 'Decimal' && typeof obj.toNumber === 'function') {
+    return obj.toNumber();
+  }
+  
   const cleaned: any = {};
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {

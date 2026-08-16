@@ -12,6 +12,7 @@ export interface GuideCardProps {
   specialties: string[];
   isVerified: boolean;
   onHirePress: (id: string) => void;
+  className?: string;
 }
 
 export const GuideCard: React.FC<GuideCardProps> = ({
@@ -25,9 +26,10 @@ export const GuideCard: React.FC<GuideCardProps> = ({
   specialties,
   isVerified,
   onHirePress,
+  className,
 }) => {
   return (
-    <View className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4 flex-row">
+    <View className={`bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4 flex-row ${className || ''}`}>
       {/* Photo & Verified Badge */}
       <View className="relative mr-4">
         {profilePhoto ? (

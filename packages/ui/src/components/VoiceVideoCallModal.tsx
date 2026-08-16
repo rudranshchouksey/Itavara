@@ -1,4 +1,5 @@
-import React from 'react';
+"use client";
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal as RNModal, Platform, Image } from 'react-native';
 
 export interface VoiceVideoCallModalProps {
@@ -11,7 +12,9 @@ export interface VoiceVideoCallModalProps {
   onToggleMute: () => void;
   onToggleVideo?: () => void;
   onFlipCamera?: () => void;
+  onFlipCamera?: () => void;
   currentUserId: string;
+  localStream?: any | null; // using any for MediaStream to avoid DOM lib conflicts in React Native
 }
 
 export const VoiceVideoCallModal: React.FC<VoiceVideoCallModalProps> = ({
@@ -25,9 +28,67 @@ export const VoiceVideoCallModal: React.FC<VoiceVideoCallModalProps> = ({
   onToggleVideo,
   onFlipCamera,
   currentUserId,
+  localStream,
 }) => {
   const me = participants.find(p => p.id === currentUserId);
   const others = participants.filter(p => p.id !== currentUserId);
+
+  // WebRTC ICE Candidate Queueing Logic
+  useEffect(() => {
+    let peerConnection: RTCPeerConnection | null = null;
+    let iceQueue: RTCIceCandidateInit[] = [];
+    let isRemoteDescriptionSet = false;
+
+    try {
+      peerConnection = new RTCPeerConnection({
+        iceServers: [
+          { urls: process.env.NEXT_PUBLIC_STUN_SERVER_URL || process.env.EXPO_PUBLIC_STUN_SERVER_URL || 'stun:stun.l.google.com:19302' },
+          ...(process.env.NEXT_PUBLIC_TURN_SERVER_URL ? [{
+            urls: process.env.NEXT_PUBLIC_TURN_SERVER_URL,
+            username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
+            credential: process.env.NEXT_PUBLIC_TURN_SERVER_CREDENTIAL
+          }] : [])
+        ]
+      });
+
+      // Simulated handler for incoming signals (to be hooked to sockets by parent)
+      const handleIncomingSignal = async (signal: any) => {
+        if (signal.offer) {
+          await peerConnection?.setRemoteDescription(new RTCSessionDescription(signal.offer));
+          isRemoteDescriptionSet = true;
+          // Drain queue
+          while (iceQueue.length > 0) {
+            const candidate = iceQueue.shift();
+            if (candidate) await peerConnection?.addIceCandidate(candidate);
+          }
+        } else if (signal.candidate) {
+          if (isRemoteDescriptionSet) {
+            await peerConnection?.addIceCandidate(signal.candidate);
+          } else {
+            iceQueue.push(signal.candidate);
+          }
+        }
+      };
+
+    } catch (e) {
+      console.error("WebRTC Not Supported in this environment or missing polyfill");
+    }
+
+    return () => {
+      peerConnection?.close();
+    };
+  }, [roomId]);
+
+  // Hardware cleanup for MediaStream tracks
+  useEffect(() => {
+    return () => {
+      if (localStream) {
+        localStream.getTracks().forEach((track: any) => {
+          track.stop();
+        });
+      }
+    };
+  }, [localStream]);
 
   return (
     <RNModal visible={visible} animationType="slide" transparent={false}>

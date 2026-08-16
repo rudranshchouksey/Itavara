@@ -52,6 +52,8 @@ model User {
 
   givenMentorshipSessions    SuperhostMentorshipSession[] @relation("SuperhostSessions")
   receivedMentorshipSessions SuperhostMentorshipSession[] @relation("AspiringHostSessions")
+
+  corporateMemberships CorporateEmployee[]
 }
 
 model VerificationBadge {
@@ -137,6 +139,10 @@ model Booking {
   referrerId     String?
   referrer       User?           @relation("ReferredBookings", fields: [referrerId], references: [id], onDelete: SetNull)
   rentalBookings RentalBooking[]
+
+  isCorporateBooking Boolean           @default(false)
+  corporateAccountId String?
+  corporateAccount   CorporateAccount? @relation(fields: [corporateAccountId], references: [id], onDelete: SetNull)
 }
 
 model AddOn {
@@ -434,4 +440,46 @@ model SuperhostMentorshipSession {
   notes          String?          @db.Text
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
+}
+
+enum CorporateRole {
+  ADMIN
+  EMPLOYEE
+}
+
+model CorporateAccount {
+  id            String                  @id @default(uuid())
+  companyName   String
+  billingEmail  String
+  gstinTaxId    String?
+  creditLimit   Decimal                 @default(0)
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+  employees     CorporateEmployee[]
+  bookingPolicy CorporateBookingPolicy?
+  bookings      Booking[]
+}
+
+model CorporateEmployee {
+  id                   String           @id @default(uuid())
+  corporateAccountId   String
+  corporateAccount     CorporateAccount @relation(fields: [corporateAccountId], references: [id], onDelete: Cascade)
+  userId               String
+  user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spendingLimitPerTrip Decimal?
+  role                 CorporateRole    @default(EMPLOYEE)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  @@unique([corporateAccountId, userId])
+}
+
+model CorporateBookingPolicy {
+  id                 String           @id @default(uuid())
+  corporateAccountId String           @unique
+  corporateAccount   CorporateAccount @relation(fields: [corporateAccountId], references: [id], onDelete: Cascade)
+  maxNightlyRate     Decimal
+  allowedStayTypes   ListingType[]
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
 }

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { GuideCard, GuideCardProps } from './GuideCard';
@@ -7,6 +8,7 @@ export interface GuideDirectoryViewProps {
   isLoading: boolean;
   onSearch: (filters: { location?: string; language?: string; specialty?: string }) => void;
   onHireGuide: (guideId: string) => void;
+  className?: string;
 }
 
 export const GuideDirectoryView: React.FC<GuideDirectoryViewProps> = ({
@@ -14,6 +16,7 @@ export const GuideDirectoryView: React.FC<GuideDirectoryViewProps> = ({
   isLoading,
   onSearch,
   onHireGuide,
+  className,
 }) => {
   const [locationQuery, setLocationQuery] = useState('');
   const [activeSpecialty, setActiveSpecialty] = useState<string | null>(null);
@@ -37,7 +40,7 @@ export const GuideDirectoryView: React.FC<GuideDirectoryViewProps> = ({
   };
 
   return (
-    <View className="flex-1 bg-[#F7F7F7]">
+    <View className={`flex-1 bg-[#F7F7F7] ${className || ''}`}>
       {/* Search Header */}
       <View className="bg-white p-4 pt-6 border-b border-gray-200 z-10 shadow-sm">
         <Text className="text-2xl font-bold text-[#222222] mb-4">Find a Local Guide</Text>

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '@itvara/db';
-import { MentorshipTopic } from '@prisma/client';
+import { MentorshipTopic } from '@itvara/db';
 import { randomUUID } from 'crypto';
 
 export const getMentors = async (req: Request, res: Response) => {

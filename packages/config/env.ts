@@ -10,7 +10,12 @@ const envSchema = z.object({
   CLIENT_WEB_URL: z.string().url(),
   CLIENT_MOBILE_SCHEME: z.string().min(1),
   STORAGE_BUCKET_URL: z.string().url(),
-  SOCKET_CORS_ORIGIN: z.string().url()
+  SOCKET_CORS_ORIGIN: z.string().url(),
+  STUN_SERVER_URL: z.string().default('stun:stun.l.google.com:19302'),
+  TURN_SERVER_URL: z.string().default(''),
+  TURN_SERVER_USERNAME: z.string().default(''),
+  TURN_SERVER_CREDENTIAL: z.string().default(''),
+  CORPORATE_INVOICE_BUCKET_URL: z.string().url().default('https://storage.googleapis.com/itvara-invoices')
 });
 
 const _env = envSchema.safeParse(process.env);

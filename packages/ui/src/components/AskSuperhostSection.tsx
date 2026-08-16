@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, Modal, TextInput } from 'react-native';
 
@@ -13,12 +14,14 @@ export interface AskSuperhostSectionProps {
   mentors: Mentor[];
   onRequestSession: (mentorId: string, topic: string, date: Date, notes: string) => void;
   onInstantConnect: (mentorId: string) => void;
+  className?: string;
 }
 
 export const AskSuperhostSection: React.FC<AskSuperhostSectionProps> = ({
   mentors,
   onRequestSession,
-  onInstantConnect
+  onInstantConnect,
+  className
 }) => {
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [topic, setTopic] = useState('LISTING_PREP');
@@ -36,7 +39,7 @@ export const AskSuperhostSection: React.FC<AskSuperhostSectionProps> = ({
   };
 
   return (
-    <View className="py-8 bg-white border-y border-gray-100">
+    <View className={`py-8 bg-white border-y border-gray-100 ${className || ''}`}>
       <View className="px-6 mb-6">
         <Text className="text-3xl font-bold text-[#222222] mb-2">Ask a Superhost</Text>
         <Text className="text-gray-500 text-base leading-6">

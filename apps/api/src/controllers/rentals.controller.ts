@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '@itvara/db';
-import { RentalCategory } from '@prisma/client';
+import { RentalCategory } from '@itvara/db';
 
 export const getRentals = async (req: Request, res: Response) => {
   try {
