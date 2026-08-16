@@ -43,6 +43,9 @@ model User {
   createdGroupRooms GroupRoom[]       @relation("CreatedGroupRooms")
   groupMemberships  GroupRoomMember[]
   groupMessages     GroupMessage[]
+
+  guideProfile  GuideProfile?
+  guideBookings GuideHireBooking[] @relation("TravelerBookings")
 }
 
 model VerificationBadge {
@@ -310,4 +313,42 @@ model GroupMessage {
   content   String
   mediaUrl  String?
   createdAt DateTime  @default(now())
+}
+
+model GuideProfile {
+  id              String             @id @default(uuid())
+  userId          String             @unique
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hourlyRate      Decimal            @default(0)
+  dailyRate       Decimal            @default(0)
+  languages       String[]
+  specialties     String[]
+  serviceAreas    String[]
+  experienceYears Int                @default(0)
+  rating          Float              @default(0)
+  isVerified      Boolean            @default(false)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  bookings        GuideHireBooking[] @relation("GuideBookings")
+}
+
+enum GuideBookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model GuideHireBooking {
+  id            String             @id @default(uuid())
+  guideId       String
+  guide         GuideProfile       @relation("GuideBookings", fields: [guideId], references: [id], onDelete: Cascade)
+  travelerId    String
+  traveler      User               @relation("TravelerBookings", fields: [travelerId], references: [id], onDelete: Cascade)
+  date          DateTime
+  durationHours Int
+  totalAmount   Decimal
+  status        GuideBookingStatus @default(PENDING)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
 }

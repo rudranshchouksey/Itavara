@@ -18,5 +18,7 @@ export * from './src/components/HostHighlightRow';
 export * from './src/components/ChatWindow';
 export * from './src/components/GroupChatRoom';
 export * from './src/components/VoiceVideoCallModal';
+export * from './src/components/GuideCard';
+export * from './src/components/GuideDirectoryView';
 
 export const UI_VERSION = "1.0.0";
