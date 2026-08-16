@@ -15,6 +15,7 @@ import feedRoutes from './routes/feed.routes';
 import postsRoutes from './routes/posts.routes';
 import hostsRoutes from './routes/hosts.routes';
 import guidesRoutes from './routes/guides.routes';
+import rentalsRoutes from './routes/rentals.routes';
 import { env } from '@itvara/config';
 import { authGuard } from './middleware/authGuard';
 import { initSocketIO } from './sockets';
@@ -63,6 +64,7 @@ app.use('/api/feed', feedRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/hosts', hostsRoutes);
 app.use('/api/guides', guidesRoutes);
+app.use('/api/rentals', rentalsRoutes);
 
 // Example of a protected route using the authGuard
 app.get('/api/me', authGuard, (req, res) => {
