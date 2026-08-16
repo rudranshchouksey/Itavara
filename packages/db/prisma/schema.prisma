@@ -49,6 +49,9 @@ model User {
 
   rentalItems    RentalItem[]    @relation("HostRentalItems")
   rentalBookings RentalBooking[] @relation("TravelerRentalBookings")
+
+  givenMentorshipSessions    SuperhostMentorshipSession[] @relation("SuperhostSessions")
+  receivedMentorshipSessions SuperhostMentorshipSession[] @relation("AspiringHostSessions")
 }
 
 model VerificationBadge {
@@ -405,4 +408,30 @@ model RentalBooking {
   status        RentalBookingStatus @default(PENDING)
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
+}
+
+enum MentorshipTopic {
+  LISTING_PREP
+  PRICING_STRATEGY
+  HOSPITALITY_TIPS
+}
+
+enum MentorshipStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+model SuperhostMentorshipSession {
+  id             String           @id @default(uuid())
+  superhostId    String
+  superhost      User             @relation("SuperhostSessions", fields: [superhostId], references: [id], onDelete: Cascade)
+  aspiringHostId String
+  aspiringHost   User             @relation("AspiringHostSessions", fields: [aspiringHostId], references: [id], onDelete: Cascade)
+  scheduledAt    DateTime
+  topic          MentorshipTopic
+  status         MentorshipStatus @default(SCHEDULED)
+  notes          String?          @db.Text
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 }
