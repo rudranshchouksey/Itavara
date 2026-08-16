@@ -115,6 +115,74 @@ export function initSocketIO(httpServer: HttpServer): Server {
       }
     });
 
+    // Group Rooms & Messaging
+    socket.on('join_group_room', async ({ roomId }) => {
+      try {
+        const membership = await prisma.groupRoomMember.findUnique({
+          where: {
+            roomId_userId: { roomId, userId: user.userId }
+          }
+        });
+
+        if (membership) {
+          socket.join(`group_${roomId}`);
+          console.log(`User ${user.userId} joined group room ${roomId}`);
+        }
+      } catch (err) {
+        console.error('Error joining group room:', err);
+      }
+    });
+
+    socket.on('send_group_message', async ({ roomId, content, mediaUrl }) => {
+      try {
+        const message = await prisma.groupMessage.create({
+          data: {
+            roomId,
+            senderId: user.userId,
+            content,
+            mediaUrl,
+          },
+          include: {
+            sender: {
+              select: { id: true, name: true, profilePhoto: true }
+            }
+          }
+        });
+
+        io.to(`group_${roomId}`).emit('new_group_message', message);
+      } catch (err) {
+        console.error('Error sending group message:', err);
+      }
+    });
+
+    // WebRTC Signaling
+    socket.on('webrtc_offer', ({ roomId, offer, targetUserId }) => {
+      socket.to(`group_${roomId}`).emit('webrtc_offer', {
+        roomId,
+        offer,
+        senderId: user.userId,
+        targetUserId
+      });
+    });
+
+    socket.on('webrtc_answer', ({ roomId, answer, targetUserId }) => {
+      socket.to(`group_${roomId}`).emit('webrtc_answer', {
+        roomId,
+        answer,
+        senderId: user.userId,
+        targetUserId
+      });
+    });
+
+    socket.on('webrtc_ice_candidate', ({ roomId, candidate, targetUserId }) => {
+      socket.to(`group_${roomId}`).emit('webrtc_ice_candidate', {
+        roomId,
+        candidate,
+        senderId: user.userId,
+        targetUserId
+      });
+    });
+
     socket.on('disconnect', () => {
       console.log(`User disconnected from Socket.io: ${user.userId}`);
     });

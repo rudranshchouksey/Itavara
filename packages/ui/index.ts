@@ -16,5 +16,7 @@ export * from './src/components/InlineItineraryCard';
 export * from './src/components/CreatorEarningsCard';
 export * from './src/components/HostHighlightRow';
 export * from './src/components/ChatWindow';
+export * from './src/components/GroupChatRoom';
+export * from './src/components/VoiceVideoCallModal';
 
 export const UI_VERSION = "1.0.0";

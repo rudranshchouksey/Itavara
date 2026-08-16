@@ -15,15 +15,15 @@ enum Role {
 }
 
 model User {
-  id           String             @id @default(uuid())
-  email        String             @unique
-  phoneNumber  String?
-  passwordHash String
-  name         String
-  profilePhoto String?
-  bio          String?
-  hometown     String?
-  role         Role               @default(GUEST)
+  id                String             @id @default(uuid())
+  email             String             @unique
+  phoneNumber       String?
+  passwordHash      String
+  name              String
+  profilePhoto      String?
+  bio               String?
+  hometown          String?
+  role              Role               @default(GUEST)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   verification      VerificationBadge?
@@ -39,6 +39,10 @@ model User {
   storyHighlights   StoryHighlight[]
   conversations     Conversation[]     @relation("ConversationParticipants")
   messages          Message[]
+
+  createdGroupRooms GroupRoom[]       @relation("CreatedGroupRooms")
+  groupMemberships  GroupRoomMember[]
+  groupMessages     GroupMessage[]
 }
 
 model VerificationBadge {
@@ -62,9 +66,9 @@ enum ListingType {
 }
 
 model Listing {
-  id            String             @id @default(uuid())
+  id            String                                @id @default(uuid())
   hostId        String
-  host          User               @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  host          User                                  @relation(fields: [hostId], references: [id], onDelete: Cascade)
   title         String
   description   String
   type          ListingType
@@ -74,9 +78,9 @@ model Listing {
   longitude     Float
   location      Unsupported("geometry(Point, 4326)")?
   maxGuests     Int
-  bedCount      Int                @default(1)
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
+  bedCount      Int                                   @default(1)
+  createdAt     DateTime                              @default(now())
+  updatedAt     DateTime                              @updatedAt
   amenities     Amenity[]
   customOptions CustomTripOption?
   bookings      Booking[]
@@ -91,13 +95,13 @@ model Amenity {
 }
 
 model CustomTripOption {
-  id              String   @id @default(uuid())
-  listingId       String   @unique
-  listing         Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  hasCabRental    Boolean  @default(false)
-  hasLocalAttire  Boolean  @default(false)
-  hasFoodCuration Boolean  @default(false)
-  hasLocalGuide   Boolean  @default(false)
+  id              String  @id @default(uuid())
+  listingId       String  @unique
+  listing         Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  hasCabRental    Boolean @default(false)
+  hasLocalAttire  Boolean @default(false)
+  hasFoodCuration Boolean @default(false)
+  hasLocalGuide   Boolean @default(false)
 }
 
 enum BookingStatus {
@@ -108,37 +112,37 @@ enum BookingStatus {
 }
 
 model Booking {
-  id         String        @id @default(uuid())
-  userId     String
-  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  listingId  String
-  listing    Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  checkIn    DateTime
-  checkOut   DateTime
-  totalPrice Decimal
-  status     BookingStatus @default(PENDING)
-  createdAt  DateTime      @default(now())
-  addOns     AddOn[]
+  id          String        @id @default(uuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId   String
+  listing     Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  checkIn     DateTime
+  checkOut    DateTime
+  totalPrice  Decimal
+  status      BookingStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  addOns      AddOn[]
   transaction Transaction?
-  referrerId String?
-  referrer   User?         @relation("ReferredBookings", fields: [referrerId], references: [id], onDelete: SetNull)
+  referrerId  String?
+  referrer    User?         @relation("ReferredBookings", fields: [referrerId], references: [id], onDelete: SetNull)
 }
 
 model AddOn {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   bookingId String
-  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  type      String   // e.g., "CAB", "ATTIRE", "FOOD_CURATION", "GUIDE"
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  type      String // e.g., "CAB", "ATTIRE", "FOOD_CURATION", "GUIDE"
   price     Decimal
 }
 
 model Transaction {
-  id        String   @id @default(uuid())
-  bookingId String   @unique
-  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  provider  String   // e.g., "RAZORPAY", "PHONEPE", "STRIPE"
+  id        String  @id @default(uuid())
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  provider  String // e.g., "RAZORPAY", "PHONEPE", "STRIPE"
   paymentId String?
-  status    String   // e.g., "SUCCESS", "FAILED", "PENDING"
+  status    String // e.g., "SUCCESS", "FAILED", "PENDING"
 }
 
 enum PostType {
@@ -148,14 +152,14 @@ enum PostType {
 }
 
 model Post {
-  id        String    @id @default(uuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      PostType
-  title     String?
-  content         String?   @db.Text
+  id              String           @id @default(uuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type            PostType
+  title           String?
+  content         String?          @db.Text
   mediaUrls       String[]
-  createdAt       DateTime  @default(now())
+  createdAt       DateTime         @default(now())
   tags            Tag[]
   comments        Comment[]
   likes           Like[]
@@ -168,11 +172,11 @@ model Tag {
   post            Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   taggedListingId String?
   taggedListing   Listing? @relation(fields: [taggedListingId], references: [id], onDelete: SetNull)
-  taggedGuideId   String?  // No Guide model defined yet
+  taggedGuideId   String? // No Guide model defined yet
   taggedUserId    String?
   taggedUser      User?    @relation(fields: [taggedUserId], references: [id], onDelete: SetNull)
-  timestamp       Float?   // Second in the video reel where this tag appears
-  inlinePosition  Int?     // Paragraph index in the mini-blog where this tag is attached
+  timestamp       Float? // Second in the video reel where this tag appears
+  inlinePosition  Int? // Paragraph index in the mini-blog where this tag is attached
 }
 
 model Comment {
@@ -240,13 +244,13 @@ model WalletTransaction {
 }
 
 model StoryHighlight {
-  id            String    @id @default(uuid())
+  id            String   @id @default(uuid())
   hostId        String
-  host          User      @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  host          User     @relation(fields: [hostId], references: [id], onDelete: Cascade)
   title         String
   coverImageUrl String
   mediaUrls     String[]
-  createdAt     DateTime  @default(now())
+  createdAt     DateTime @default(now())
 }
 
 model Conversation {
@@ -269,4 +273,41 @@ model Message {
   createdAt      DateTime     @default(now())
 }
 
+enum GroupRoomRole {
+  ADMIN
+  MEMBER
+}
 
+model GroupRoom {
+  id         String            @id @default(uuid())
+  name       String
+  creatorId  String
+  creator    User              @relation("CreatedGroupRooms", fields: [creatorId], references: [id], onDelete: Cascade)
+  coverImage String?
+  createdAt  DateTime          @default(now())
+  members    GroupRoomMember[]
+  messages   GroupMessage[]
+}
+
+model GroupRoomMember {
+  id       String        @id @default(uuid())
+  roomId   String
+  room     GroupRoom     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     GroupRoomRole @default(MEMBER)
+  joinedAt DateTime      @default(now())
+
+  @@unique([roomId, userId])
+}
+
+model GroupMessage {
+  id        String    @id @default(uuid())
+  roomId    String
+  room      GroupRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User      @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  content   String
+  mediaUrl  String?
+  createdAt DateTime  @default(now())
+}
