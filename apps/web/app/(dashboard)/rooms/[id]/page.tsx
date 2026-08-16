@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { GroupChatRoom, VoiceVideoCallModal } from '@itvara/ui';
 import { io, Socket } from 'socket.io-client';
 import { env } from '@itvara/config';
@@ -7,7 +7,9 @@ import { env } from '@itvara/config';
 // Replace with a real user context hook in production
 const currentUserId = "mock-user-id"; 
 
-export default function GroupRoomPage({ params }: { params: { id: string } }) {
+export default function GroupRoomPage({ params }: { params: Promise<{ id: string }> }) {
+  const unwrappedParams = use(params);
+  const roomId = unwrappedParams.id;
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isCallModalVisible, setIsCallModalVisible] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -48,7 +50,7 @@ export default function GroupRoomPage({ params }: { params: { id: string } }) {
       <div className="flex-1 flex flex-col h-full border-x border-gray-200">
         <GroupChatRoom
           socket={socket}
-          roomId={params.id}
+          roomId={roomId}
           roomName="Himalayan Backpackers"
           currentUserId={currentUserId}
           members={mockMembers}
@@ -58,7 +60,7 @@ export default function GroupRoomPage({ params }: { params: { id: string } }) {
 
       <VoiceVideoCallModal
         visible={isCallModalVisible}
-        roomId={params.id}
+        roomId={roomId}
         roomName="Himalayan Backpackers"
         currentUserId={currentUserId}
         participants={callParticipants}

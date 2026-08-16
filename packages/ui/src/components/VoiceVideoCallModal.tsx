@@ -12,7 +12,6 @@ export interface VoiceVideoCallModalProps {
   onToggleMute: () => void;
   onToggleVideo?: () => void;
   onFlipCamera?: () => void;
-  onFlipCamera?: () => void;
   currentUserId: string;
   localStream?: any | null; // using any for MediaStream to avoid DOM lib conflicts in React Native
 }
@@ -146,7 +145,7 @@ export const VoiceVideoCallModal: React.FC<VoiceVideoCallModalProps> = ({
 
         {/* Controls Footer */}
         <View className="pb-10 pt-4 px-6 bg-black/40 flex-row justify-between items-center">
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={onToggleMute}
             className={`w-14 h-14 rounded-full items-center justify-center ${me?.isMuted ? 'bg-red-500' : 'bg-gray-600'}`}
           >
@@ -154,7 +153,7 @@ export const VoiceVideoCallModal: React.FC<VoiceVideoCallModalProps> = ({
           </TouchableOpacity>
 
           {!isAudioOnly && (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={onToggleVideo}
               className={`w-14 h-14 rounded-full items-center justify-center ${!me?.isVideoOn ? 'bg-red-500' : 'bg-gray-600'}`}
             >
@@ -163,7 +162,7 @@ export const VoiceVideoCallModal: React.FC<VoiceVideoCallModalProps> = ({
           )}
 
           {!isAudioOnly && Platform.OS !== 'web' && (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={onFlipCamera}
               className="w-14 h-14 rounded-full bg-gray-600 items-center justify-center"
             >
@@ -171,7 +170,7 @@ export const VoiceVideoCallModal: React.FC<VoiceVideoCallModalProps> = ({
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={onClose}
             className="w-14 h-14 rounded-full bg-[#FF385C] items-center justify-center"
           >
