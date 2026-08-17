@@ -17,14 +17,17 @@ export class PrivacyService {
         return text;
       }
 
-      let sanitizedText = text;
-      settings.hiddenKeywords.forEach(keyword => {
-        // Case insensitive global replacement
-        const regex = new RegExp(`\\b${this.escapeRegExp(keyword)}\\b`, 'gi');
-        sanitizedText = sanitizedText.replace(regex, '***');
-      });
+      // Filter out overly long keywords to prevent ReDoS and build a single regex
+      const safeKeywords = settings.hiddenKeywords
+        .filter(k => k.trim().length > 0 && k.length <= 50)
+        .map(k => this.escapeRegExp(k.trim()));
 
-      return sanitizedText;
+      if (safeKeywords.length === 0) return text;
+
+      // Construct a single regex alternation: \b(keyword1|keyword2)\b
+      const regex = new RegExp(`\\b(${safeKeywords.join('|')})\\b`, 'gi');
+      
+      return text.replace(regex, '***');
     } catch (error) {
       console.error('Error in sanitizeComment:', error);
       return text; // fallback to original text if fails

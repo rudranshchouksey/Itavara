@@ -20,7 +20,8 @@ export const NotificationFilterSettings = ({
   marketingPromotions,
   securityAlerts,
   pauseAllUntil,
-  onUpdate
+  onUpdate,
+  className
 }: NotificationPreferencesProps) => {
   const isPaused = pauseAllUntil !== null && new Date(pauseAllUntil) > new Date();
 
@@ -36,7 +37,7 @@ export const NotificationFilterSettings = ({
   };
 
   return (
-    <View className="p-4 bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-neutral-100 dark:border-neutral-800">
+    <View className={`p-4 bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-neutral-100 dark:border-neutral-800 ${className || ''}`}>
       
       <View className="mb-6 p-4 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
         <View className="flex-row items-center justify-between">

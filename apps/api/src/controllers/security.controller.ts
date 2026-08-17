@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import { prisma } from '@itvara/db';
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
-import { getActiveSessions, revokeRefreshToken } from '../services/redis.service';
+import { getActiveSessions, revokeRefreshToken, revokeAllOtherSessions } from '../services/redis.service';
+import bcrypt from 'bcryptjs';
 
 export const setup2FA = async (req: Request, res: Response) => {
   try {
@@ -52,7 +53,8 @@ export const verify2FA = async (req: Request, res: Response) => {
     const verified = speakeasy.totp.verify({
       secret: user.twoFactorSecret,
       encoding: 'base32',
-      token
+      token,
+      window: 1
     });
 
     if (verified) {
@@ -61,11 +63,15 @@ export const verify2FA = async (req: Request, res: Response) => {
         Math.random().toString(36).substring(2, 10).toUpperCase()
       );
 
+      const hashedBackupCodes = await Promise.all(
+        backupCodes.map(code => bcrypt.hash(code, 10))
+      );
+
       await prisma.user.update({
         where: { id: userId },
         data: {
           twoFactorEnabled: true,
-          backupCodes
+          backupCodes: hashedBackupCodes
         }
       });
 
@@ -129,5 +135,22 @@ export const terminateSession = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error terminating session:', error);
     res.status(500).json({ error: 'Failed to terminate session' });
+  }
+};
+
+export const terminateAllOtherSessions = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    const { currentToken } = req.body;
+
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!currentToken) return res.status(400).json({ error: 'Current token is required' });
+
+    await revokeAllOtherSessions(userId, currentToken);
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error terminating all other sessions:', error);
+    res.status(500).json({ error: 'Failed to terminate all other sessions' });
   }
 };

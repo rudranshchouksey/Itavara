@@ -19,17 +19,21 @@ interface NotificationCenterViewProps {
   onMarkAsRead: (id: string) => void;
   onLoadMore?: () => void;
   hasMore?: boolean;
+  isLoading?: boolean;
+  className?: string;
 }
 
 export const NotificationCenterView = ({
   notifications,
   onMarkAsRead,
   onLoadMore,
-  hasMore
+  hasMore,
+  isLoading = false,
+  className
 }: NotificationCenterViewProps) => {
   return (
     <ScrollView 
-      className="flex-1 bg-white dark:bg-neutral-900"
+      className={`flex-1 bg-white dark:bg-neutral-900 ${className || ''}`}
       contentContainerStyle={{ paddingBottom: 24 }}
     >
       {notifications.length === 0 ? (

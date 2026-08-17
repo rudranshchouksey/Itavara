@@ -150,3 +150,81 @@ export interface CorporateInvoiceDTO {
   };
   bookings: any[];
 }
+
+// Phase 41: Ads
+export interface SponsoredCampaignDTO {
+  id: string;
+  listingId: string;
+  hostId: string;
+  budget: number;
+  spent: number;
+  cpcRate: number;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+}
+
+export interface AdInteractionDTO {
+  campaignId: string;
+  type: 'IMPRESSION' | 'CLICK';
+  signature: string; // generated using AD_CLICK_SIGNING_KEY
+}
+
+// Phase 42: Themes
+export interface ThemePreferenceDTO {
+  theme: 'LIGHT' | 'DARK' | 'SYSTEM';
+}
+
+export interface UpdateThemeDTO {
+  theme: 'LIGHT' | 'DARK' | 'SYSTEM';
+}
+
+// Phase 43: Notifications
+export interface NotificationPreferenceDTO {
+  pauseAllUntil?: string;
+  likesComments: boolean;
+  followersTags: boolean;
+  messagesCalls: boolean;
+  marketingPromotions: boolean;
+  securityAlerts: boolean;
+}
+
+export interface NotificationFeedDTO {
+  notifications: any[]; // ideally mapped to a Notification interface
+  nextCursor?: string;
+}
+
+// Phase 44: Privacy
+export interface UserPrivacySettingDTO {
+  isPrivateAccount: boolean;
+  allowTaggingFrom: 'EVERYONE' | 'FOLLOWERS_ONLY' | 'NO_ONE';
+  hiddenKeywords: string[];
+  blockedUserIds: string[];
+  mutedUserIds: string[];
+}
+
+export interface BlockUserDTO {
+  userIdToBlock: string;
+}
+
+export interface MuteUserDTO {
+  userIdToMute: string;
+}
+
+// Phase 45: Security
+export interface TwoFactorSetupDTO {
+  secret: string;
+  qrCodeUrl: string;
+}
+
+export interface TwoFactorVerifyDTO {
+  token: string;
+}
+
+export interface ActiveSessionDTO {
+  id: string;
+  device: string;
+  ip: string;
+  lastActive: string;
+  token?: string;
+}

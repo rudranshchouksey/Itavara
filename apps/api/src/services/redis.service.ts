@@ -87,6 +87,24 @@ export async function getActiveSessions(userId: string): Promise<any[]> {
 /**
  * Revokes all sessions (all refresh tokens) for a user.
  */
+export async function revokeAllOtherSessions(userId: string, currentToken: string): Promise<void> {
+  const key = `refresh_tokens:${userId}`;
+  const members = await redis.smembers(key);
+  
+  for (const member of members) {
+    try {
+      const data = JSON.parse(member);
+      if (data.token !== currentToken) {
+        await redis.srem(key, member);
+      }
+    } catch {
+      if (member !== currentToken) {
+        await redis.srem(key, member);
+      }
+    }
+  }
+}
+
 export async function revokeAllSessions(userId: string): Promise<void> {
   const key = `refresh_tokens:${userId}`;
   await redis.del(key);

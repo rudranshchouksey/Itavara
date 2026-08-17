@@ -22,6 +22,7 @@ interface SponsoredListingCardProps {
   onPress?: () => void;
   onImpression?: (campaignId: string) => void;
   onClick?: (campaignId: string) => void;
+  className?: string;
 }
 
 export const SponsoredListingCard = ({
@@ -39,7 +40,8 @@ export const SponsoredListingCard = ({
   onWishlistToggle,
   onPress,
   onImpression,
-  onClick
+  onClick,
+  className
 }: SponsoredListingCardProps) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(isWishlistedInitially);
@@ -104,7 +106,7 @@ export const SponsoredListingCard = ({
   };
 
   return (
-    <TouchableOpacity activeOpacity={0.9} onPress={handlePress} className="w-full mb-6">
+    <TouchableOpacity activeOpacity={0.9} onPress={handlePress} className={`w-full mb-6 ${className || ''}`}>
       <View 
         onLayout={(e) => setCardWidth(e.nativeEvent.layout.width)}
         className="relative w-full aspect-square rounded-[16px] overflow-hidden mb-3 bg-neutral-100"

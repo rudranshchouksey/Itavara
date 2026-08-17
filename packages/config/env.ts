@@ -15,7 +15,13 @@ const envSchema = z.object({
   TURN_SERVER_URL: z.string().default(''),
   TURN_SERVER_USERNAME: z.string().default(''),
   TURN_SERVER_CREDENTIAL: z.string().default(''),
-  CORPORATE_INVOICE_BUCKET_URL: z.string().url().default('https://storage.googleapis.com/itvara-invoices')
+  CORPORATE_INVOICE_BUCKET_URL: z.string().url().default('https://storage.googleapis.com/itvara-invoices'),
+  
+  // Phase 41-45 Secrets & Configs
+  TOTP_ENCRYPTION_SECRET: z.string().min(1),
+  AD_CLICK_SIGNING_KEY: z.string().min(1),
+  NOTIFICATION_BATCH_LIMIT: z.string().transform(Number),
+  SESSION_TTL_DAYS: z.string().transform(Number)
 });
 
 const _env = envSchema.safeParse(process.env);

@@ -18,6 +18,7 @@ export interface SecurityCheckupDashboardProps {
   onSetup2FA: () => Promise<{ secret: string; qrCodeUrl: string }>;
   onVerify2FA: (token: string) => Promise<{ success: boolean; backupCodes?: string[] }>;
   onChangePassword: (current: string, newPass: string) => Promise<void>;
+  className?: string;
 }
 
 export const SecurityCheckupDashboard = ({
@@ -26,7 +27,8 @@ export const SecurityCheckupDashboard = ({
   onTerminateSession,
   onSetup2FA,
   onVerify2FA,
-  onChangePassword
+  onChangePassword,
+  className
 }: SecurityCheckupDashboardProps) => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -79,7 +81,7 @@ export const SecurityCheckupDashboard = ({
   };
 
   return (
-    <ScrollView className="flex-1 bg-white dark:bg-neutral-900" contentContainerStyle={{ padding: 24 }}>
+    <ScrollView className={`flex-1 bg-white dark:bg-neutral-900 ${className || ''}`} contentContainerStyle={{ padding: 24 }}>
       <View className="flex-row items-center mb-6">
         <ShieldCheck size={28} color="#FF385C" className="mr-3" />
         <Text className="text-2xl font-bold text-neutral-900 dark:text-white">Security Center</Text>

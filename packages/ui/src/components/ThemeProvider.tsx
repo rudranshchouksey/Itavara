@@ -1,6 +1,7 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { useColorScheme as useNativeColorScheme } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { ThemePreference } from '@itvara/types';
 import { setItem, getItem } from '@itvara/utils'; // Assuming this handles platform specific storage (localStorage / AsyncStorage)
 
@@ -51,6 +52,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <ThemeContext.Provider value={{ themePreference, setThemePreference, isDark }}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       {children}
     </ThemeContext.Provider>
   );

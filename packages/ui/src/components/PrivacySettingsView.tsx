@@ -16,6 +16,7 @@ export interface PrivacySettingsViewProps {
   onUpdateSetting: (key: string, value: any) => void;
   onUnblockUser: (userId: string) => void;
   onUnmuteUser: (userId: string) => void;
+  className?: string;
 }
 
 export const PrivacySettingsView = ({
@@ -26,7 +27,8 @@ export const PrivacySettingsView = ({
   mutedUserIds,
   onUpdateSetting,
   onUnblockUser,
-  onUnmuteUser
+  onUnmuteUser,
+  className
 }: PrivacySettingsViewProps) => {
 
   const [newKeyword, setNewKeyword] = useState('');
@@ -43,7 +45,7 @@ export const PrivacySettingsView = ({
   };
 
   return (
-    <ScrollView className="flex-1 bg-white dark:bg-neutral-900" contentContainerStyle={{ padding: 24 }}>
+    <ScrollView className={`flex-1 bg-white dark:bg-neutral-900 ${className || ''}`} contentContainerStyle={{ padding: 24 }}>
       <Text className="text-2xl font-bold text-neutral-900 dark:text-white mb-6">Privacy Suite</Text>
       
       {/* Private Account */}
