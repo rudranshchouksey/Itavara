@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import { prisma } from '@itvara/db';
-import { TaggingPermission } from '@prisma/client';
+import { prisma, TaggingPermission } from '@itvara/db';
 
 export const getPrivacySettings = async (req: Request, res: Response) => {
   try {
