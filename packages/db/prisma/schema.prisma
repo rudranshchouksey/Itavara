@@ -29,6 +29,12 @@ enum NotificationType {
   SYSTEM
 }
 
+enum TaggingPermission {
+  EVERYONE
+  FOLLOWERS_ONLY
+  NO_ONE
+}
+
 model User {
   id                String             @id @default(uuid())
   email             String             @unique
@@ -57,6 +63,7 @@ model User {
   messages          Message[]
 
   notificationPrefs     NotificationPreference?
+  privacySettings       UserPrivacySetting?
   receivedNotifications Notification[]          @relation("ReceivedNotifications")
   sentNotifications     Notification[]          @relation("SentNotifications")
 
@@ -577,4 +584,15 @@ model Notification {
   referenceId String? // ID of the post, comment, etc.
   isRead      Boolean          @default(false)
   createdAt   DateTime         @default(now())
+}
+
+model UserPrivacySetting {
+  id               String            @id @default(uuid())
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPrivateAccount Boolean           @default(false)
+  allowTaggingFrom TaggingPermission @default(EVERYONE)
+  hiddenKeywords   String[]          @default([])
+  blockedUserIds   String[]          @default([])
+  mutedUserIds     String[]          @default([])
 }
