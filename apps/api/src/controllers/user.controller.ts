@@ -62,6 +62,37 @@ export class UserController {
     }
   }
 
+  static async updatePreferences(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      const { themePreference } = req.body;
+      const validThemes = ['LIGHT', 'DARK', 'SYSTEM'];
+
+      if (themePreference && !validThemes.includes(themePreference)) {
+        res.status(400).json({ error: 'Invalid theme preference' });
+        return;
+      }
+
+      const dataToUpdate: any = {};
+      if (themePreference) dataToUpdate.themePreference = themePreference;
+
+      const user = await prisma.user.update({
+        where: { id: userId },
+        data: dataToUpdate,
+      });
+
+      res.status(200).json({ themePreference: user.themePreference });
+    } catch (error: any) {
+      console.error('Error updating preferences:', error);
+      res.status(500).json({ error: 'Internal server error updating preferences' });
+    }
+  }
+
   static async getProfilePosts(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.userId;

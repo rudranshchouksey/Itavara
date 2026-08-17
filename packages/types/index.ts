@@ -3,6 +3,12 @@ export * from './auth';
 export * from './verification';
 export * from './user';
 
+export enum ThemePreference {
+  LIGHT = 'LIGHT',
+  DARK = 'DARK',
+  SYSTEM = 'SYSTEM'
+}
+
 export interface SearchListingsDTO {
   latitude?: number;
   longitude?: number;

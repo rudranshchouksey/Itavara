@@ -22,5 +22,8 @@ export * from './src/components/GuideCard';
 export * from './src/components/GuideDirectoryView';
 export * from './src/components/RentalSelectorWidget';
 export * from './src/components/AskSuperhostSection';
+export * from './src/components/ThemeProvider';
+export * from './src/components/SponsoredListingCard';
+export * from './src/components/SponsoredFeedBanner';
 
 export const UI_VERSION = "1.0.0";

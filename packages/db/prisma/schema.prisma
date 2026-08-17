@@ -14,6 +14,12 @@ enum Role {
   TRAVEL_ADMIN
 }
 
+enum ThemePreference {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
 model User {
   id                String             @id @default(uuid())
   email             String             @unique
@@ -24,6 +30,7 @@ model User {
   bio               String?
   hometown          String?
   role              Role               @default(GUEST)
+  themePreference   ThemePreference    @default(SYSTEM)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   verification      VerificationBadge?
