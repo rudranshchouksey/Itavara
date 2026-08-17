@@ -54,6 +54,9 @@ model User {
   receivedMentorshipSessions SuperhostMentorshipSession[] @relation("AspiringHostSessions")
 
   corporateMemberships CorporateEmployee[]
+
+  sponsoredCampaigns SponsoredCampaign[]
+  adInteractions     AdInteraction[]
 }
 
 model VerificationBadge {
@@ -77,26 +80,27 @@ enum ListingType {
 }
 
 model Listing {
-  id            String                                @id @default(uuid())
-  hostId        String
-  host          User                                  @relation(fields: [hostId], references: [id], onDelete: Cascade)
-  title         String
-  description   String
-  type          ListingType
-  pricePerNight Decimal
-  address       String
-  latitude      Float
-  longitude     Float
-  location      Unsupported("geometry(Point, 4326)")?
-  maxGuests     Int
-  bedCount      Int                                   @default(1)
-  createdAt     DateTime                              @default(now())
-  updatedAt     DateTime                              @updatedAt
-  amenities     Amenity[]
-  customOptions CustomTripOption?
-  bookings      Booking[]
-  tags          Tag[]
-  rentalItems   RentalItem[]
+  id                 String                                @id @default(uuid())
+  hostId             String
+  host               User                                  @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  title              String
+  description        String
+  type               ListingType
+  pricePerNight      Decimal
+  address            String
+  latitude           Float
+  longitude          Float
+  location           Unsupported("geometry(Point, 4326)")?
+  maxGuests          Int
+  bedCount           Int                                   @default(1)
+  createdAt          DateTime                              @default(now())
+  updatedAt          DateTime                              @updatedAt
+  amenities          Amenity[]
+  customOptions      CustomTripOption?
+  bookings           Booking[]
+  tags               Tag[]
+  rentalItems        RentalItem[]
+  sponsoredCampaigns SponsoredCampaign[]
 }
 
 model Amenity {
@@ -482,4 +486,51 @@ model CorporateBookingPolicy {
   allowedStayTypes   ListingType[]
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
+}
+
+enum CampaignType {
+  SEARCH_BOOST
+  SOCIAL_FEED_AD
+  BANNER
+}
+
+enum CampaignStatus {
+  ACTIVE
+  PAUSED
+  DEPLETED
+}
+
+model SponsoredCampaign {
+  id           String          @id @default(uuid())
+  advertiserId String
+  advertiser   User            @relation(fields: [advertiserId], references: [id], onDelete: Cascade)
+  listingId    String?
+  listing      Listing?        @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  campaignType CampaignType
+  budget       Decimal
+  spent        Decimal         @default(0)
+  cpcRate      Decimal
+  impressions  Int             @default(0)
+  clicks       Int             @default(0)
+  status       CampaignStatus  @default(ACTIVE)
+  startDate    DateTime        @default(now())
+  endDate      DateTime?
+  interactions AdInteraction[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+enum InteractionType {
+  IMPRESSION
+  CLICK
+}
+
+model AdInteraction {
+  id              String            @id @default(uuid())
+  campaignId      String
+  campaign        SponsoredCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  userId          String?
+  user            User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  interactionType InteractionType
+  createdAt       DateTime          @default(now())
 }

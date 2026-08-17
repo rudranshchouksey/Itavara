@@ -123,16 +123,60 @@ export const searchListings = async (req: Request, res: Response) => {
       radiusInMeters
     );
 
+    // Fetch sponsored listings in the same area
+    const sponsoredRawQuery = `
+      SELECT 
+        l.*, 
+        ST_DistanceSphere(l.location, ST_SetSRID(ST_MakePoint($1, $2), 4326)) AS distance_meters,
+        sc.id AS "campaignId",
+        sc."cpcRate"
+      FROM "Listing" l
+      INNER JOIN "SponsoredCampaign" sc ON sc."listingId" = l.id
+      WHERE ST_DWithin(
+        l.location::geography, 
+        ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, 
+        $3
+      )
+      AND sc."campaignType" = 'SEARCH_BOOST'
+      AND sc.status = 'ACTIVE'
+      AND sc.budget > sc.spent
+      ORDER BY sc."cpcRate" DESC
+      LIMIT 3
+    `;
+    
+    const sponsoredListings: any[] = await prisma.$queryRawUnsafe(
+      sponsoredRawQuery,
+      longitude,
+      latitude,
+      radiusInMeters
+    );
+
     // Format the results to add the "X km away" string
     const formattedListings = listings.map((listing) => {
       const distanceKm = (listing.distance_meters / 1000).toFixed(1);
       return {
         ...listing,
-        distanceString: `${distanceKm} km away`
+        distanceString: `${distanceKm} km away`,
+        isSponsored: false
       };
     });
 
-    res.status(200).json({ listings: formattedListings });
+    const formattedSponsored = sponsoredListings.map((listing) => {
+      const distanceKm = (listing.distance_meters / 1000).toFixed(1);
+      return {
+        ...listing,
+        distanceString: `${distanceKm} km away`,
+        isSponsored: true
+      };
+    });
+
+    // Remove duplicates from formattedListings if they appear in sponsored
+    const sponsoredIds = new Set(formattedSponsored.map(s => s.id));
+    const filteredListings = formattedListings.filter(l => !sponsoredIds.has(l.id));
+
+    const finalResults = [...formattedSponsored, ...filteredListings];
+
+    res.status(200).json({ listings: finalResults });
   } catch (error) {
     console.error('Error searching listings:', error);
     res.status(500).json({ error: 'Failed to search listings' });
