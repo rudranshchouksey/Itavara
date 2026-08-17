@@ -20,6 +20,15 @@ enum ThemePreference {
   SYSTEM
 }
 
+enum NotificationType {
+  LIKE
+  COMMENT
+  TAG
+  MENTION
+  ROOM_INVITE
+  SYSTEM
+}
+
 model User {
   id                String             @id @default(uuid())
   email             String             @unique
@@ -46,6 +55,10 @@ model User {
   storyHighlights   StoryHighlight[]
   conversations     Conversation[]     @relation("ConversationParticipants")
   messages          Message[]
+
+  notificationPrefs     NotificationPreference?
+  receivedNotifications Notification[]          @relation("ReceivedNotifications")
+  sentNotifications     Notification[]          @relation("SentNotifications")
 
   createdGroupRooms GroupRoom[]       @relation("CreatedGroupRooms")
   groupMemberships  GroupRoomMember[]
@@ -540,4 +553,28 @@ model AdInteraction {
   user            User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
   interactionType InteractionType
   createdAt       DateTime          @default(now())
+}
+
+model NotificationPreference {
+  id                  String    @id @default(uuid())
+  userId              String    @unique
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pauseAllUntil       DateTime?
+  likesComments       Boolean   @default(true)
+  followersTags       Boolean   @default(true)
+  messagesCalls       Boolean   @default(true)
+  marketingPromotions Boolean   @default(true)
+  securityAlerts      Boolean   @default(true) // Should rarely be false, but included for completeness
+}
+
+model Notification {
+  id          String           @id @default(uuid())
+  recipientId String
+  recipient   User             @relation("ReceivedNotifications", fields: [recipientId], references: [id], onDelete: Cascade)
+  actorId     String?
+  actor       User?            @relation("SentNotifications", fields: [actorId], references: [id], onDelete: SetNull)
+  type        NotificationType
+  referenceId String? // ID of the post, comment, etc.
+  isRead      Boolean          @default(false)
+  createdAt   DateTime         @default(now())
 }
