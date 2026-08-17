@@ -11,6 +11,7 @@ export interface NotificationPreferencesProps {
   securityAlerts: boolean;
   pauseAllUntil: Date | null;
   onUpdate: (key: string, value: any) => void;
+  className?: string;
 }
 
 export const NotificationFilterSettings = ({

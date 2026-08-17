@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@itvara/utils": "workspace:*",
+    "date-fns": "^4.4.0",
     "expo-haptics": "^14.0.0",
     "lucide-react-native": "^0.290.0",
     "nativewind": "^4.1.23",
