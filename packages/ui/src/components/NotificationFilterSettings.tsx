@@ -116,7 +116,16 @@ const HeartIcon = () => (
   </View>
 );
 
-const SettingRow = ({ icon, title, description, value, onChange, disabled }: any) => {
+interface SettingRowProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+  disabled?: boolean;
+}
+
+const SettingRow = ({ icon, title, description, value, onChange, disabled }: SettingRowProps) => {
   return (
     <View className={`flex-row items-center justify-between ${disabled ? 'opacity-50' : 'opacity-100'}`}>
       <View className="flex-row flex-1 mr-4">
