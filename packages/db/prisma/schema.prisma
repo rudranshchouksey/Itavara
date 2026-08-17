@@ -46,6 +46,9 @@ model User {
   hometown          String?
   role              Role               @default(GUEST)
   themePreference   ThemePreference    @default(SYSTEM)
+  twoFactorEnabled  Boolean            @default(false)
+  twoFactorSecret   String?
+  backupCodes       String[]           @default([])
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   verification      VerificationBadge?

@@ -17,14 +17,18 @@ redis.on('connect', () => {
  * For multiple devices, you'd typically use a set or hash.
  * We'll use a set to allow multiple sessions per user.
  */
-export async function addRefreshToken(userId: string, token: string, expiresInDays = 7): Promise<void> {
+export async function addRefreshToken(userId: string, token: string, expiresInDays = 7, metadata: any = {}): Promise<void> {
   const key = `refresh_tokens:${userId}`;
   const expirySeconds = expiresInDays * 24 * 60 * 60;
   
-  // Add to set and update the expiration of the entire set
-  // In a robust system, you might store expiry per token in a hash, 
-  // but for simplicity, we add the token to a set.
-  await redis.sadd(key, token);
+  // Store metadata as string alongside token
+  const sessionData = JSON.stringify({
+    token,
+    ...metadata,
+    createdAt: new Date().toISOString()
+  });
+
+  await redis.sadd(key, sessionData);
   await redis.expire(key, expirySeconds);
 }
 
@@ -33,16 +37,51 @@ export async function addRefreshToken(userId: string, token: string, expiresInDa
  */
 export async function validateRefreshToken(userId: string, token: string): Promise<boolean> {
   const key = `refresh_tokens:${userId}`;
-  const isMember = await redis.sismember(key, token);
-  return isMember === 1;
+  const members = await redis.smembers(key);
+  
+  for (const member of members) {
+    try {
+      const data = JSON.parse(member);
+      if (data.token === token) return true;
+    } catch {
+      // Legacy format fallback
+      if (member === token) return true;
+    }
+  }
+  return false;
 }
 
-/**
- * Revokes a specific refresh token.
- */
 export async function revokeRefreshToken(userId: string, token: string): Promise<void> {
   const key = `refresh_tokens:${userId}`;
-  await redis.srem(key, token);
+  const members = await redis.smembers(key);
+  
+  for (const member of members) {
+    try {
+      const data = JSON.parse(member);
+      if (data.token === token) {
+        await redis.srem(key, member);
+        return;
+      }
+    } catch {
+      if (member === token) {
+        await redis.srem(key, member);
+        return;
+      }
+    }
+  }
+}
+
+export async function getActiveSessions(userId: string): Promise<any[]> {
+  const key = `refresh_tokens:${userId}`;
+  const members = await redis.smembers(key);
+  
+  return members.map(m => {
+    try {
+      return JSON.parse(m);
+    } catch {
+      return { token: m, createdAt: new Date().toISOString(), legacy: true };
+    }
+  });
 }
 
 /**

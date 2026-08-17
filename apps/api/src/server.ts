@@ -21,6 +21,7 @@ import corporateRoutes from './routes/corporate.routes';
 import adsRoutes from './routes/ads.routes';
 import notificationsRoutes from './routes/notifications.routes';
 import privacyRoutes from './routes/privacy.routes';
+import securityRoutes from './routes/security.routes';
 import { env } from '@itvara/config';
 import { authGuard } from './middleware/authGuard';
 import { initSocketIO } from './sockets';
@@ -75,6 +76,7 @@ app.use('/api/corporate', corporateRoutes);
 app.use('/api/ads', adsRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/privacy', privacyRoutes);
+app.use('/api/security', securityRoutes);
 
 // Example of a protected route using the authGuard
 app.get('/api/me', authGuard, (req, res) => {

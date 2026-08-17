@@ -28,5 +28,6 @@ export * from './src/components/SponsoredFeedBanner';
 export * from './src/components/NotificationCenterView';
 export * from './src/components/NotificationFilterSettings';
 export * from './src/components/PrivacySettingsView';
+export * from './src/components/SecurityCheckupDashboard';
 
 export const UI_VERSION = "1.0.0";
