@@ -15,6 +15,7 @@
     "@itvara/utils": "workspace:*",
     "date-fns": "^4.4.0",
     "expo-haptics": "^14.0.0",
+    "expo-status-bar": "^57.0.1",
     "lucide-react-native": "^0.290.0",
     "nativewind": "^4.1.23",
     "react-native-svg": "14.1.0",

@@ -266,6 +266,9 @@ importers:
       expo-haptics:
         specifier: ^14.0.0
         version: 14.1.4(expo@57.0.11)
+      expo-status-bar:
+        specifier: ^57.0.1
+        version: 57.0.1(expo@57.0.11)(react-native@0.86.2(@babel/core@7.29.7)(@react-native-community/cli@12.3.6)(@react-native/metro-config@0.86.2(@babel/core@7.29.7))(@types/react@18.3.31)(react@19.2.8))(react@19.2.8)
       lucide-react-native:
         specifier: ^0.290.0
         version: 0.290.0(prop-types@15.8.1)(react-native-svg@14.1.0(react-native@0.86.2(@babel/core@7.29.7)(@react-native-community/cli@12.3.6)(@react-native/metro-config@0.86.2(@babel/core@7.29.7))(@types/react@18.3.31)(react@19.2.8))(react@19.2.8))(react-native@0.86.2(@babel/core@7.29.7)(@react-native-community/cli@12.3.6)(@react-native/metro-config@0.86.2(@babel/core@7.29.7))(@types/react@18.3.31)(react@19.2.8))(react@19.2.8)
