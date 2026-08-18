@@ -9,7 +9,7 @@ test.describe('Auth and Profile Management', () => {
     await expect(page.locator('input[name="email"]')).toBeVisible({ timeout: 15000 });
     await page.fill('input[name="email"]', 'testuser@itvara.com');
     await page.fill('input[name="password"]', 'Password123!');
-    await page.click('button[type="submit"]');
+    await page.click('text="Submit"');
 
     // Wait for navigation
     await expect(page).toHaveURL(/.*\/explore.*/, { timeout: 15000 });

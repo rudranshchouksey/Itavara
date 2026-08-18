@@ -1,19 +1,10 @@
-"use client";
-
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
+import Link from 'next/link';
 
 export default function LoginPage() {
-  const router = useRouter();
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    router.push('/');
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <form onSubmit={handleLogin} className="bg-white p-8 rounded-xl shadow-md">
+      <div className="bg-white p-8 rounded-xl shadow-md">
         <h1 className="text-2xl font-bold mb-6">Login</h1>
         <input 
           type="email" 
@@ -27,10 +18,10 @@ export default function LoginPage() {
           placeholder="Password" 
           className="border p-2 mb-6 w-full rounded" 
         />
-        <button type="submit" className="bg-blue-600 text-white w-full py-2 rounded font-bold">
+        <Link href="/explore" className="block text-center bg-blue-600 text-white w-full py-2 rounded font-bold" type="submit">
           Submit
-        </button>
-      </form>
+        </Link>
+      </div>
     </div>
   );
 }
