@@ -1,6 +1,6 @@
 import '@itvara/ui/styles.css';
 import React from 'react';
-import { UniversalFooter, SubBottomFooter } from '@itvara/ui';
+import { UniversalFooter, SubBottomFooter, ThemeProvider } from '@itvara/ui';
 
 export default function RootLayout({
   children,
@@ -25,11 +25,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col">
-        <main className="flex-grow">
-          {children}
-        </main>
-        <UniversalFooter />
-        <SubBottomFooter />
+        <ThemeProvider>
+          <main className="flex-grow">
+            {children}
+          </main>
+          <UniversalFooter />
+          <SubBottomFooter />
+        </ThemeProvider>
       </body>
     </html>
   );

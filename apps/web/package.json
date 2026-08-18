@@ -10,6 +10,7 @@
   "dependencies": {
     "@itvara/ui": "workspace:*",
     "@itvara/utils": "workspace:*",
+    "@itvara/types": "workspace:*",
     "i18next": "^26.3.6",
     "lucide-react": "^0.290.0",
     "next": "^15.0.0",

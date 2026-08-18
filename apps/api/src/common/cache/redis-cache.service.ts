@@ -70,6 +70,18 @@ class RedisCache {
   generateHash(data: any): string {
     return crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex');
   }
+
+  async ping(): Promise<string> {
+    if (!this.isConnected || !this.client) throw new Error('Redis not connected');
+    return await this.client.ping();
+  }
+
+  disconnect(): void {
+    if (this.client) {
+      this.client.disconnect();
+      this.isConnected = false;
+    }
+  }
 }
 
 export const RedisCacheService = new RedisCache();

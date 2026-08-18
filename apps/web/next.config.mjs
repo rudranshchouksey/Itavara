@@ -16,7 +16,9 @@ const nextConfig = {
     'lucide-react-native',
     'react-native-svg',
     'nativewind',
-    'react-native-css-interop'
+    'react-native-css-interop',
+    'expo-status-bar',
+    'expo-modules-core'
   ],
   webpack: (config) => {
     config.resolve.alias = {

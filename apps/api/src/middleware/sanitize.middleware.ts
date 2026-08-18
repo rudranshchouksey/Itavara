@@ -1,12 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
-import { escape } from 'validator';
+
+// Simple HTML escape function to prevent basic XSS
+const escapeHtml = (unsafe: string) => {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
 
 // Deep object sanitizer helper using string escape
 const sanitizeDeep = (obj: any, skipKeys: string[] = []): any => {
   if (obj === null || obj === undefined) return obj;
 
   if (typeof obj === 'string') {
-    return escape(obj);
+    return escapeHtml(obj);
   }
 
   if (Array.isArray(obj)) {

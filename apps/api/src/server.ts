@@ -81,9 +81,31 @@ app.use(cookieParser());
 // Apply global serialization middleware
 app.use(serializeResponseMiddleware);
 
+import { prisma } from '@itvara/db';
+import { RedisCacheService } from './common/cache/redis-cache.service';
+
 // Health check
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+app.get('/health', async (req, res) => {
+  try {
+    // Ping Database
+    await prisma.$queryRaw`SELECT 1`;
+    // Ping Redis
+    await RedisCacheService.ping();
+
+    res.status(200).json({ 
+      status: 'ok',
+      database: 'connected',
+      redis: 'connected',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error: any) {
+    console.error('Health check failed:', error);
+    res.status(503).json({ 
+      status: 'error',
+      message: 'Service Unavailable',
+      error: error.message
+    });
+  }
 });
 
 // Routes
