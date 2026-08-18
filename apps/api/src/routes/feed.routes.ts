@@ -2,8 +2,11 @@ import { Router } from 'express';
 import { FeedController } from '../controllers/feed.controller';
 import { authGuard } from '../middleware/authGuard';
 import { cacheMiddleware } from '../middleware/cache.middleware';
+import { publicLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
+
+router.use(publicLimiter);
 
 // Assuming feeds are only for authenticated users based on standard social apps
 // If public access is allowed, you can remove authGuard or make it optional.

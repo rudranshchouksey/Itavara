@@ -28,6 +28,9 @@ import { initSocketIO } from './sockets';
 
 import { serializeResponseMiddleware } from './middleware/serializeResponse';
 
+import { sanitizeMiddleware } from './middleware/sanitize.middleware';
+import helmet from 'helmet';
+
 const app = express();
 const httpServer = createServer(app);
 const PORT = env.PORT;
@@ -35,8 +38,30 @@ const PORT = env.PORT;
 // Initialize Socket.io
 initSocketIO(httpServer);
 
+// Security Headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", env.CLIENT_WEB_URL || '*'],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
+
+// Strict CORS Origin Whitelisting
+const allowedOrigins = [env.CLIENT_WEB_URL, env.CLIENT_MOBILE_SCHEME, env.SOCKET_CORS_ORIGIN].filter(Boolean);
 app.use(cors({
-  origin: env.SOCKET_CORS_ORIGIN,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 
@@ -47,6 +72,10 @@ app.use(express.json({
     }
   }
 }));
+
+// Apply global input sanitization
+app.use(sanitizeMiddleware);
+
 app.use(cookieParser());
 
 // Apply global serialization middleware
