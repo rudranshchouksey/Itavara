@@ -112,8 +112,12 @@ app.get('/api/me', authGuard, (req, res) => {
   res.status(200).json({ user: req.user });
 });
 
-httpServer.listen(PORT, () => {
-  console.log(`API Server running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  httpServer.listen(PORT, () => {
+    console.log(`API Server running on port ${PORT}`);
+  });
+}
+
+export { app, httpServer };
 
 
