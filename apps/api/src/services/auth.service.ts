@@ -1,10 +1,8 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { PrismaClient, User } from '@itvara/db';
+import { prisma, User } from '@itvara/db';
 import { OAuth2Client } from 'google-auth-library';
 import { JwtPayload, LoginDTO, RegisterDTO } from '@itvara/types';
-
-const prisma = new PrismaClient();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_key_for_dev';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'super_secret_refresh_key_for_dev';

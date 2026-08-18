@@ -67,8 +67,63 @@ class RedisCache {
     }
   }
 
+  // Cache stampede prevention (Probabilistic early expiration)
+  async getOrSet<T>(key: string, fetchFn: () => Promise<T>, ttlSeconds: number): Promise<T> {
+    if (!this.isConnected || !this.client) {
+      return await fetchFn();
+    }
+
+    try {
+      const cached = await this.client.get(key);
+      const now = Date.now();
+      
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        // parsed: { data: T, expiry: number }
+        
+        // Probabilistic early expiration (beta = 1.0)
+        // If remaining time is less than a random gap, we recompute in background
+        const remaining = parsed.expiry - now;
+        const computeTimeMs = 1000; // estimated time to compute
+        const shouldRefresh = remaining < -computeTimeMs * Math.log(Math.random());
+
+        if (shouldRefresh) {
+          // Recompute asynchronously without blocking
+          fetchFn().then(newData => {
+             this.setWithExpiry(key, newData, ttlSeconds).catch(console.error);
+          }).catch(console.error);
+        }
+
+        return parsed.data;
+      }
+    } catch (e) {
+      console.error('Redis getOrSet parse error:', e);
+    }
+
+    // Cache miss, compute synchronously
+    const data = await fetchFn();
+    await this.setWithExpiry(key, data, ttlSeconds);
+    return data;
+  }
+
+  private async setWithExpiry(key: string, data: any, ttlSeconds: number) {
+    if (!this.client) return;
+    const expiry = Date.now() + (ttlSeconds * 1000);
+    const payload = JSON.stringify({ data, expiry });
+    await this.client.set(key, payload, 'EX', ttlSeconds);
+  }
+
   generateHash(data: any): string {
-    return crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex');
+    // Strictly serialize data (e.g. PostGIS coordinates array)
+    const sortedStringified = JSON.stringify(data, (key, value) => 
+      (value instanceof Object && !(value instanceof Array)) 
+        ? Object.keys(value).sort().reduce((sorted: any, k) => {
+            sorted[k] = value[k];
+            return sorted;
+          }, {})
+        : value
+    );
+    return crypto.createHash('sha256').update(sortedStringified).digest('hex');
   }
 
   async ping(): Promise<string> {

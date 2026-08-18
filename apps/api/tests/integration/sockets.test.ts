@@ -2,23 +2,25 @@ import { io as Client, Socket } from 'socket.io-client';
 import { httpServer } from '../../src/server';
 import { env } from '@itvara/config';
 import { RedisCacheService } from '../../src/common/cache/redis-cache.service';
+import { AuthService } from '../../src/services/auth.service';
 import { prisma } from '@itvara/db';
 
 describe('WebSockets Integration', () => {
   let clientSocket: Socket;
 
   beforeAll((done) => {
-    // Only start if it's not already listening (it shouldn't be in test mode)
-    if (!httpServer.listening) {
-      httpServer.listen(() => {
-        const port = (httpServer.address() as any).port;
-        clientSocket = Client(`http://localhost:${port}`);
-        clientSocket.on('connect', done);
-      });
-    } else {
-      const port = (httpServer.address() as any).port;
-      clientSocket = Client(`http://localhost:${port}`);
+    jest.spyOn(AuthService, 'verifyJwt').mockReturnValue({ userId: 'test_user', role: 'guest' } as any);
+
+    const connectClient = (port: number) => {
+      clientSocket = Client(`http://localhost:${port}`, { auth: { token: 'dummy_token' } });
       clientSocket.on('connect', done);
+      clientSocket.on('connect_error', done);
+    };
+
+    if (!httpServer.listening) {
+      httpServer.listen(() => connectClient((httpServer.address() as any).port));
+    } else {
+      connectClient((httpServer.address() as any).port);
     }
   });
 

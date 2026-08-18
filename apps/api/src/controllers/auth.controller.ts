@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { prisma } from '@itvara/db';
 import { AuthService } from '../services/auth.service';
 import {
   addRefreshToken,
@@ -88,8 +89,6 @@ export class AuthController {
         return;
       }
 
-      const { PrismaClient } = require('@itvara/db');
-      const prisma = new PrismaClient();
       const user = await prisma.user.findUnique({ where: { id: payload.userId } });
 
       if (!user) {

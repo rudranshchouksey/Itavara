@@ -228,3 +228,39 @@ export interface ActiveSessionDTO {
   lastActive: string;
   token?: string;
 }
+
+// Phase 46-50: Universal Footer, Caching, and Health
+export interface FooterLinkSectionDTO {
+  title: string;
+  links: Array<{ label: string; href: string }>;
+}
+
+export interface LanguageOptionDTO {
+  code: string;
+  name: string;
+}
+
+export interface CurrencyOptionDTO {
+  code: string;
+  symbol: string;
+  name: string;
+}
+
+export interface CacheConfigDTO {
+  ttlSeconds: number;
+  strategy: 'EXACT' | 'PROBABILISTIC';
+}
+
+export interface RateLimitRuleDTO {
+  points: number;
+  durationSeconds: number;
+}
+
+export interface HealthCheckResponseDTO {
+  status: 'ok' | 'error';
+  database?: 'connected' | 'disconnected';
+  redis?: 'connected' | 'disconnected';
+  timestamp: string;
+  error?: string;
+  message?: string;
+}

@@ -1,7 +1,6 @@
-import { PrismaClient, VerificationBadge } from '@itvara/db';
+import { VerificationBadge } from '@itvara/db';
 import { VerificationRequestDTO } from '@itvara/types';
-
-const prisma = new PrismaClient();
+import { prisma } from '@itvara/db';
 
 export class VerificationService {
   

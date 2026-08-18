@@ -4,7 +4,7 @@ module.exports = {
   testEnvironment: 'node',
   testMatch: ['**/tests/integration/**/*.test.ts'],
   moduleFileExtensions: ['ts', 'js', 'json', 'node'],
-  setupFilesAfterEnv: [],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   clearMocks: true,
   moduleNameMapper: {
     '^@itvara/db$': '<rootDir>/../../packages/db/index.ts',

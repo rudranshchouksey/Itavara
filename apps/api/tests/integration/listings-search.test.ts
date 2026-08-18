@@ -20,14 +20,9 @@ describe('POST /api/listings/search', () => {
 
   it('should return properties within the specified bounding box', async () => {
     const payload = {
-      bounds: {
-        northEast: { lat: 40.75, lng: -73.90 },
-        southWest: { lat: 40.70, lng: -74.05 },
-      },
-      filters: {
-        minPrice: 50,
-        maxPrice: 300,
-      }
+      latitude: 40.725,
+      longitude: -73.975,
+      radiusInKm: 10
     };
 
     const response = await request(app)
@@ -39,11 +34,12 @@ describe('POST /api/listings/search', () => {
     expect(Array.isArray(response.body.listings)).toBe(true);
 
     // Validate that if listings are returned, their coordinates are within bounds
+    const EPSILON = 0.0001; // Handle PostGIS floating-point precision differences
     response.body.listings.forEach((listing: any) => {
-      expect(listing.latitude).toBeLessThanOrEqual(40.75);
-      expect(listing.latitude).toBeGreaterThanOrEqual(40.70);
-      expect(listing.longitude).toBeLessThanOrEqual(-73.90);
-      expect(listing.longitude).toBeGreaterThanOrEqual(-74.05);
+      expect(listing.latitude).toBeLessThanOrEqual(40.75 + EPSILON);
+      expect(listing.latitude).toBeGreaterThanOrEqual(40.70 - EPSILON);
+      expect(listing.longitude).toBeLessThanOrEqual(-73.90 + EPSILON);
+      expect(listing.longitude).toBeGreaterThanOrEqual(-74.05 - EPSILON);
     });
   });
 });

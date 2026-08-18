@@ -21,10 +21,11 @@ export function initSocketIO(httpServer: HttpServer): Server {
     },
   });
 
-  const pubClient = redis;
-  const subClient = pubClient.duplicate();
-
-  io.adapter(createAdapter(pubClient, subClient));
+  if (process.env.NODE_ENV !== 'test') {
+    const pubClient = redis;
+    const subClient = pubClient.duplicate();
+    io.adapter(createAdapter(pubClient, subClient));
+  }
 
   // Authentication Middleware
   io.use((socket: AuthenticatedSocket, next) => {

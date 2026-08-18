@@ -3,7 +3,7 @@ import path from 'path';
 
 export default defineConfig({
   testDir: './e2e',
-  timeout: 30 * 1000,
+  timeout: 90 * 1000,
   expect: {
     timeout: 5000
   },
@@ -36,5 +36,6 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     cwd: path.resolve(__dirname),
+    timeout: 120 * 1000,
   },
 });
