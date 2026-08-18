@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma, Prisma, ListingType } from '@itvara/db';
+import { RedisCacheService } from '../common/cache/redis-cache.service';
 
 export const createListing = async (req: Request, res: Response) => {
   try {
@@ -70,8 +71,11 @@ export const createListing = async (req: Request, res: Response) => {
       return listing;
     });
 
-    res.status(201).json({ message: 'Listing created successfully', listing: newListing });
-  } catch (error) {
+      // Invalidate the search cache since new listings might be available
+      RedisCacheService.delByPattern('cache:*/api/listings/search*');
+
+      res.status(201).json({ message: 'Listing created successfully', listing: newListing });
+    } catch (error) {
     console.error('Error creating listing:', error);
     res.status(500).json({ error: 'Failed to create listing' });
   }

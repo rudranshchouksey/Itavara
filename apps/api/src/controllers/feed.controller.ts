@@ -68,4 +68,35 @@ export class FeedController {
       res.status(500).json({ error: 'Internal server error fetching reels' });
     }
   }
+  static async getTrending(req: Request, res: Response): Promise<void> {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      const posts = await prisma.post.findMany({
+        where: {
+          type: { in: ['REEL', 'MINI_BLOG'] }
+        },
+        take: limit,
+        orderBy: [
+          { createdAt: 'desc' },
+          // In a real app we might order by a score of likes/comments, 
+          // but Prisma doesn't natively support ordering by relation aggregates in findMany this easily 
+          // without raw queries or specialized indexes, so we just use latest.
+        ],
+        include: {
+          user: {
+            select: { id: true, name: true, profilePhoto: true }
+          },
+          _count: {
+            select: { likes: true, comments: true }
+          }
+        }
+      });
+
+      res.status(200).json({ data: posts });
+    } catch (error: any) {
+      console.error('Error fetching trending feed:', error);
+      res.status(500).json({ error: 'Internal server error fetching trending feed' });
+    }
+  }
 }

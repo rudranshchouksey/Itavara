@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { FeedController } from '../controllers/feed.controller';
 import { authGuard } from '../middleware/authGuard';
+import { cacheMiddleware } from '../middleware/cache.middleware';
 
 const router = Router();
 
@@ -9,5 +10,6 @@ const router = Router();
 router.use(authGuard);
 
 router.get('/reels', FeedController.getReels);
+router.get('/trending', cacheMiddleware(300), FeedController.getTrending); // 5 mins cache
 
 export default router;

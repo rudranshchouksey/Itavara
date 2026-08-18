@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '@itvara/db';
+import { RedisCacheService } from '../common/cache/redis-cache.service';
 
 export class PostsController {
   
@@ -70,6 +71,9 @@ export class PostsController {
           }
         }
       });
+
+      // Invalidate trending feed cache
+      RedisCacheService.delByPattern('cache:*/api/feed/trending*');
 
       res.status(201).json({ data: post, wordCount });
     } catch (error: any) {

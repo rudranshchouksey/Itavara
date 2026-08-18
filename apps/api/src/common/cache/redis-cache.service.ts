@@ -1,0 +1,75 @@
+import Redis from 'ioredis';
+import crypto from 'crypto';
+
+class RedisCache {
+  private client: Redis | null = null;
+  private isConnected: boolean = false;
+
+  constructor() {
+    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+    
+    try {
+      this.client = new Redis(redisUrl, {
+        retryStrategy(times) {
+          const delay = Math.min(times * 50, 2000);
+          return delay;
+        },
+        maxRetriesPerRequest: 3,
+      });
+
+      this.client.on('connect', () => {
+        console.log('Redis connected');
+        this.isConnected = true;
+      });
+
+      this.client.on('error', (err) => {
+        console.error('Redis error:', err);
+        this.isConnected = false;
+      });
+    } catch (error) {
+      console.error('Failed to initialize Redis client:', error);
+    }
+  }
+
+  async get(key: string): Promise<string | null> {
+    if (!this.isConnected || !this.client) return null;
+    try {
+      return await this.client.get(key);
+    } catch (error) {
+      console.error(`Redis GET error for key ${key}:`, error);
+      return null;
+    }
+  }
+
+  async set(key: string, value: string, ttlSeconds: number): Promise<void> {
+    if (!this.isConnected || !this.client) return;
+    try {
+      await this.client.set(key, value, 'EX', ttlSeconds);
+    } catch (error) {
+      console.error(`Redis SET error for key ${key}:`, error);
+    }
+  }
+
+  async delByPattern(pattern: string): Promise<void> {
+    if (!this.isConnected || !this.client) return;
+    try {
+      let cursor = '0';
+      do {
+        const result = await this.client.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+        cursor = result[0];
+        const keys = result[1];
+        if (keys.length > 0) {
+          await this.client.del(...keys);
+        }
+      } while (cursor !== '0');
+    } catch (error) {
+      console.error(`Redis DEL pattern error for ${pattern}:`, error);
+    }
+  }
+
+  generateHash(data: any): string {
+    return crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex');
+  }
+}
+
+export const RedisCacheService = new RedisCache();
